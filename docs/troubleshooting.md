@@ -1,0 +1,22 @@
+# Troubleshooting
+
+## AWS SSO Token Expiry
+If you see errors like:
+```text
+Error when retrieving token from sso: Token has expired and refresh failed
+```
+It means your local AWS session is dead.
+
+**Fix:**
+Relia will automatically fallback to its **Bundled Pricing Database** or **Local Cache**, so you can typically ignore this warning if you are estimating common resources (e.g., standard EC2 families).
+To fix it properly, refresh your credentials:
+```bash
+aws sso login
+```
+
+## "Resource Not Found" in Pricing
+If a resource shows cost `-` or `$0.00`:
+1.  **Unsupported Type**: We might not support that resource yet (currently focusing on EC2, RDS).
+2.  **Complex Filters**: Some specific configurations (e.g. BYOL, Dedicated Hosts) might miss our matcher rules.
+
+Please [open an issue](https://github.com/davidahmann/relia_oss/issues) with your `.tf` snippet!

@@ -1,0 +1,12 @@
+theme: jekyll-theme-minimal
+title: Relia
+description: The ESLint for Cloud Costs. Prevent bill shock before it happens.
+logo: https://img.shields.io/pypi/v/relia?color=blue&label=relia
+show_downloads: true
+google_analytics:
+plugins:
+  - jekyll-seo-tag
+author: Relia Team
+github_username: davidahmann
+url: "https://davidahmann.github.io"
+baseurl: "/relia_oss"
