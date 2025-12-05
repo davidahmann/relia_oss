@@ -24,8 +24,8 @@ def test_extract_price(mock_pricing_client):
     }
 
     price = mock_pricing_client._extract_price(mock_data)
-    # 0.0416 * 730 = 30.368
-    assert price == 30.368
+    # Unit price is 0.0416 (No longer multiplied by 730)
+    assert price == 0.0416
 
 
 def test_get_product_price_cache_hit(mock_pricing_client):

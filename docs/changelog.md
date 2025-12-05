@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.1 (2025-12-05) "Expansion Pack"
+## v0.2.2 (2025-12-05) "Expansion Pack"
 *   **Feature**: **Resource Expansion**: Added support for **EBS** (`aws_ebs_volume`).
 *   **Feature**: **Usage Overlay**: Introduced `.relia.usage.yaml` to support usage-based resources like **S3** (`aws_s3_bucket`) and Lambda.
 *   **Feature**: **Complex Parsing**: Added support for estimating costs from Terraform Plan JSON (`terraform show -json`) with recursive module support.
