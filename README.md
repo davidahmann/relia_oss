@@ -2,12 +2,9 @@
 
 <div align="center">
 
-![Relia Banner](https://placeholder-banner-url.com) *<!-- TODO: Add banner later -->*
-
 **The "ESLint" for Cloud Costs.**
 Prevent cloud waste before it ships to production.
 
-[![CI](https://github.com/relia-oss/relia/actions/workflows/test.yml/badge.svg)](https://github.com/relia-oss/relia/actions)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
