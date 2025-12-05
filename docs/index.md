@@ -48,7 +48,7 @@ Unlike traditional cloud cost management tools (like CloudHealth or Vantage) tha
 ## 🚀 Key Features for FinOps Teams
 
 ### 1. Pre-Deployment Cost Estimation
-Calculate the exact dollar value of your Terraform plan before applying it. Relia supports **AWS EC2, RDS, and S3** (more coming soon).
+Calculate the exact dollar value of your Terraform plan before applying it. Relia supports **EC2, RDS, S3, NAT Gateways, Lambda, and Load Balancers**.
 
 ### 2. CI/CD Budget Guardrails
 Stop expensive mistakes automatically. Configure strict budget caps (e.g., "Total < $500") or resource-level limits (e.g., "No instance > $50") using a simple [`.relia.yaml`](quickstart.md#configuration) file.
@@ -61,10 +61,12 @@ Relia is designed for **DevOps engineers and SREs**. It lives in the terminal, w
 ## 📚 Documentation
 
 - **[Quickstart Guide](quickstart.md):** Installation, Usage, and Docker instructions.
+- **[Supported Resources](supported_resources.md):** Full list of supported AWS services (EC2, Lambda, etc.) and Usage Overlay guide.
 - **[Architecture](architecture.md):** How the Parser, Matcher, and Pricing Engine work.
 - **[Philosophy](philosophy.md):** Why "Prevention > Optimization" is the future of FinOps.
 - **[Troubleshooting](troubleshooting.md):** Fixing AWS SSO errors and parsing issues.
 - **[FAQ](faq.md):** Answers to common questions about accuracy, Azure/GCP support, and comparisons.
+- **[Changelog](changelog.md):** Version history and release notes.
 - **[Why We Built Relia](why-we-built-relia.md):** The story behind ending "Bill Shock".
 
 ---
