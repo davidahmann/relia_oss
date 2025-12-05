@@ -1,0 +1,17 @@
+- id: relia-estimate
+  name: Relia Cost Estimate
+  description: Estimate cloud costs for Terraform changes.
+  entry: relia estimate
+  language: python
+  types: [text]
+  files: \.tf$
+  pass_filenames: false
+
+- id: relia-check
+  name: Relia Cost Check
+  description: Block commits that exceed budget thresholds.
+  entry: relia check
+  language: python
+  types: [text]
+  files: \.tf$
+  pass_filenames: false

@@ -1,9 +1,22 @@
 [tool.poetry]
 name = "relia_oss"
-version = "0.1.1"
+version = "0.1.2"
 description = "Cloud cost prevention and optimization tool."
 authors = ["Relia Team"]
 readme = "README.md"
+homepage = "https://github.com/davidahmann/relia_oss"
+repository = "https://github.com/davidahmann/relia_oss"
+keywords = ["finops", "terraform", "cost", "cloud", "aws"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Utilities",
+]
 packages = [{include = "relia"}]
 
 [tool.poetry.dependencies]

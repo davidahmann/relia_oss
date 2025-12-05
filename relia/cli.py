@@ -16,6 +16,9 @@ def estimate(
         False, "--topology", "-t", help="Show visual cost topology"
     ),
     diff: bool = typer.Option(False, "--diff", "-d", help="Show cost difference"),
+    format: str = typer.Option(
+        "table", "--format", "-f", help="Output format: table, json"
+    ),
 ):
     """
     Estimate monthly cost for the user's infrastructure.
@@ -24,10 +27,33 @@ def estimate(
     resources, costs = engine.run(path)
 
     if not resources:
-        typer.echo("No resources found.")
+        if format == "json":
+            import json
+
+            typer.echo(json.dumps({"resources": [], "total_cost": 0.0}))
+        else:
+            typer.echo("No resources found.")
         return
 
     # Output
+    if format == "json":
+        import json
+
+        output_data = {
+            "resources": [
+                {
+                    "name": r.resource_name,
+                    "type": r.resource_type,
+                    "cost": costs.get(r.id, 0.0),
+                    "attributes": r.attributes,
+                }
+                for r in resources
+            ],
+            "total_cost": sum(costs.values()),
+        }
+        typer.echo(json.dumps(output_data, indent=2))
+        return
+
     print_estimate(resources, costs)
 
     if topology:
