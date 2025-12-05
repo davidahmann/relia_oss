@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "relia"
-version = "0.1.0"
+name = "relia_oss"
+version = "0.1.1"
 description = "Cloud cost prevention and optimization tool."
 authors = ["Relia Team"]
 readme = "README.md"
