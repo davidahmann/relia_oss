@@ -1,67 +1,71 @@
-# Relia: The ESLint for Cloud Costs
+# Relia: Open Source Cloud Cost Prevention for Terraform
 
-> **"Stop paying the infrastructure tax. Start shipping."**
+> **"The ESLint for Cloud Costs. Stop paying the infrastructure tax."**
 
-Relia is an open-source tool that prevents cloud waste before it ships. It acts as a **pre-commit hook for infrastructure**, estimating costs and enforcing budgets directly in your CI/CD pipeline.
+Relia is an **open-source FinOps tool** that runs in your CI/CD pipeline. It acts as a **pre-deployment cost estimator** for Terraform, helping engineering teams prevent AWS bill shock by catching expensive infrastructure changes *before* they are merged.
 
----
-
-## ⚡ Quickstart
-
-**1. Install**
-```bash
-pip install relia
-```
-
-**2. Check Costs**
-```bash
-relia estimate ./infra
-```
-*Output:*
-```text
-📊 Relia Cost Estimate
-+------------------+----------+------------+
-| Resource         | Type     | Cost/Month |
-+------------------+----------+------------+
-| aws_instance.web | t3.large |     $60.00 |
-+------------------+----------+------------+
-| Total            |          |     $60.00 |
-+------------------+----------+------------+
-```
-
-**3. Enforce Budget in CI**
-```bash
-relia check ./infra --budget 100
-```
-
-[Get Started Now →](quickstart.md)
+Unlike traditional cloud cost management tools (like CloudHealth or Vantage) that report on *past* spending, Relia is a **proactive guardrail**. It parses your Infrastructure-as-Code (IaC), calculates the monthly cost impact using the AWS Price List API, and enforces budget policies in your Git workflow.
 
 ---
 
-## 🚀 Why Relia?
+## ⚡ Quickstart: Estimate Terraform Costs
 
-### 1. Prevention > Optimization
-Existing tools (CloudHealth, Vantage) tell you about waste *after* you get the bill. Relia catches it *before* you merge the Pull Request.
+**How to check cloud costs in your terminal:**
 
-### 2. Developer Native
-No dashboards to log into. No "approval workflows". Relia lives in your terminal and your Git history. It feels like `black` or `ruff`, but for money.
+1.  **Install Relia via Pip:**
+    ```bash
+    pip install relia
+    ```
 
-### 3. Privacy First
-Relia runs entirely in your environment (Local or CI runner). It never sends your Terraform code or credentials to a SaaS cloud.
+2.  **Run a Cost Estimate:**
+    Navigate to your Terraform directory (`.tf` files) and run:
+    ```bash
+    relia estimate ./infra
+    ```
 
-### 4. Offline Ready
-Relia ships with a bundled pricing database. You can get accurate estimates on an airplane without needing active AWS credentials.
+    *Output:*
+    ```text
+    📊 Relia Cost Estimate
+    +------------------+----------+------------+
+    | Resource         | Type     | Cost/Month |
+    +------------------+----------+------------+
+    | aws_instance.web | t3.large |     $60.00 |
+    +------------------+----------+------------+
+    | Total            |          |     $60.00 |
+    +------------------+----------+------------+
+    ```
+
+3.  **Enforce Budgets in CI:**
+    Block Pull Requests that exceed \$100/month:
+    ```bash
+    relia check ./infra --budget 100
+    ```
+
+[Get Started with the Full Guide →](quickstart.md)
+
+---
+
+## 🚀 Key Features for FinOps Teams
+
+### 1. Pre-Deployment Cost Estimation
+Calculate the exact dollar value of your Terraform plan before applying it. Relia supports **AWS EC2, RDS, and S3** (more coming soon).
+
+### 2. CI/CD Budget Guardrails
+Stop expensive mistakes automatically. Configure strict budget caps (e.g., "Total < $500") or resource-level limits (e.g., "No instance > $50") using a simple [`.relia.yaml`](quickstart.md#configuration) file.
+
+### 3. Developer-Native Experience
+Relia is designed for **DevOps engineers and SREs**. It lives in the terminal, works offline with a bundled pricing database, and integrates seamlessly with GitHub Actions. It respects your privacy—no plan data is ever sent to a SaaS.
 
 ---
 
 ## 📚 Documentation
 
-- **[Quickstart](quickstart.md):** Install and run in 2 minutes.
+- **[Quickstart Guide](quickstart.md):** Installation, Usage, and Docker instructions.
 - **[Architecture](architecture.md):** How the Parser, Matcher, and Pricing Engine work.
-- **[Philosophy](philosophy.md):** Why we prioritized prevention over reporting.
-- **[Troubleshooting](troubleshooting.md):** Common issues (AWS creds, parsing errors).
-- **[FAQ](faq.md):** Supported clouds, accuracy, and enterprise features.
-- **[Why We Built Relia](why-we-built-relia.md):** The story behind the tool.
+- **[Philosophy](philosophy.md):** Why "Prevention > Optimization" is the future of FinOps.
+- **[Troubleshooting](troubleshooting.md):** Fixing AWS SSO errors and parsing issues.
+- **[FAQ](faq.md):** Answers to common questions about accuracy, Azure/GCP support, and comparisons.
+- **[Why We Built Relia](why-we-built-relia.md):** The story behind ending "Bill Shock".
 
 ---
 

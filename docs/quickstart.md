@@ -1,69 +1,112 @@
-# Quickstart
+# Quickstart Guide: Setting up Relia
+
+This guide covers how to install Relia, run your first cost estimate, and integrate it into your CI/CD pipeline.
+
+## Prerequisites
+*   **Python:** 3.10+ (Recommended) OR Docker
+*   **Terraform:** files (`.tf`) or a plan (`.json`)
+*   **AWS Credentials:** (Optional) for real-time pricing, though Relia works offline.
+
+---
 
 ## 1. Installation
 
-### Via Pip (Recommended)
+### Option A: Install via Pip (Recommended)
+Relia is available as a standard Python package.
 ```bash
 pip install relia
 ```
+*Verify installation:*
+```bash
+relia --version
+```
 
-### Via Docker
-You can run Relia without installing anything locally:
+### Option B: Run via Docker
+If you prefer not to manage Python dependencies, use the official Docker image.
 ```bash
 docker run --rm -v $(pwd):/app relia-io/relia estimate .
 ```
 
 ---
 
-## 2. Local Usage
+## 2. Basic Usage: Estimating Costs
 
-### Estimate Costs
-Navigate to your Terraform directory and run:
+Navigate to the root of your Terraform project (where your `main.tf` lives).
+
+### Run a Standard Estimate
 ```bash
 relia estimate .
 ```
+This parses your HCL files and outputs a table of monthly resource costs.
 
-**Options:**
-*   `--topology`: View a tree visualization of your infrastructure cost.
-*   `--diff`: Compare costs against a baseline (if available).
-
-### Check Budget
-To enforce a budget (e.g. preventing spend over $100):
+### View Infrastructure Topology
+Visualize your cost breakdown as a tree structure:
 ```bash
-relia check . --budget 100
+relia estimate . --topology
 ```
-This will exit with code `1` if the estimate exceeds $100.
+
+### Compare Against Baseline (Diff)
+See how your current code differs from a previous state (requires connectivity):
+```bash
+relia estimate . --diff
+```
 
 ---
 
-## 3. Configuration
+## 3. Advanced: Budget Enforcement
 
-Create a `.relia.yaml` file in your root to define policies:
+You can use Relia as a linter to fail if costs are too high.
 
+### CLI Flags
+```bash
+# Fail if monthly cost exceeds $100
+relia check . --budget 100
+```
+
+### Configuration File (`.relia.yaml`)
+For persistent governance, create a configuration file:
 ```yaml
-budget: 500.0  # Total monthly budget cap
+# .relia.yaml
+budget: 500.0          # Total project cap
 rules:
-  aws_instance: 100.0  # Max cost for any single EC2 instance
+  aws_instance: 100.0  # Max for single EC2
   aws_rds_instance: 200.0
+```
+
+Then simply run:
+```bash
+relia check .
 ```
 
 ---
 
 ## 4. CI/CD Integration (GitHub Actions)
 
-Add this to `.github/workflows/cost-check.yml`:
+To prevent expensive merges, add Relia to your Pull Request workflow.
 
+**File:** `.github/workflows/cost-check.yml`
 ```yaml
-name: Cost Check
+name: Relia Cost Guardrail
 on: [pull_request]
+
 jobs:
-  relia:
+  estimate-cost:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: relia-io/action@v1
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Relia Check
+        uses: relia-io/action@v1
         with:
           path: './infra'
-          budget: '1000'
+          budget: '1000' # Fail PR if > $1000/mo
           markdown_report: 'relia_report.md'
+
+      - name: Comment on PR
+        uses: peter-evans/create-or-update-comment@v3
+        if: always()
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: 'relia_report.md'
 ```

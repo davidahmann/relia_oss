@@ -110,7 +110,9 @@ def version():
     """
     Show version.
     """
-    print("Relia v0.1.0")
+    from relia import __version__
+
+    print(f"Relia v{__version__}")
 
 
 if __name__ == "__main__":
