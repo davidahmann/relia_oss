@@ -17,11 +17,14 @@ def mock_engine():
             resource_type="aws_instance",
             resource_name="web",
             attributes={"instance_type": "t3.large"},
+            file_path="main.tf",
         )
 
         # Mock run return
         # Case 1: $60 cost
+        # Case 1: $60 cost
         engine_instance.run.return_value = ([r1], {"aws_instance.web": 60.0})
+        engine_instance.check_policies.return_value = []
 
         yield engine_instance
 

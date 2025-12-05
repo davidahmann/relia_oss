@@ -26,10 +26,10 @@ class ReliaEngine:
         # 2. Price
         costs = {}
         for resource in resources:
-            filters = self.matcher.get_pricing_filters(resource)
-            if filters:
-                # Assuming EC2 for now
-                price = self.pricing_client.get_product_price("AmazonEC2", filters)
+            match_result = self.matcher.get_pricing_filters(resource)
+            if match_result:
+                service_code, filters = match_result
+                price = self.pricing_client.get_product_price(service_code, filters)
                 if price:
                     costs[resource.id] = price
 

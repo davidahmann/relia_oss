@@ -9,9 +9,9 @@ class ResourceMatcher:
 
     def get_pricing_filters(
         self, resource: ReliaResource
-    ) -> Optional[List[Dict[str, str]]]:
+    ) -> Optional[tuple[str, List[Dict[str, str]]]]:
         if resource.resource_type == "aws_instance":
-            return self._match_ec2(resource)
+            return "AmazonEC2", self._match_ec2(resource)
         # Add other resources here...
         return None
 
