@@ -20,6 +20,7 @@ pytest = "^8.0.0"
 ruff = "^0.1.0"
 mypy = "^1.0.0"
 pre-commit = "^3.5.0"
+pytest-cov = "^7.0.0"
 
 [build-system]
 requires = ["poetry-core"]
