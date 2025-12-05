@@ -45,6 +45,26 @@ Visualize your cost breakdown as a tree structure:
 relia estimate . --topology
 ```
 
+### Output Formats
+Relia produces beautiful tables for humans, but you can also get machine-readable JSON for your pipelines:
+```bash
+relia estimate . --format json
+```
+*Example Output:*
+```json
+{
+  "resources": [
+    {
+      "name": "aws_instance.web",
+      "type": "aws_instance",
+      "cost": 60.0,
+      "attributes": { ... }
+    }
+  ],
+  "total_cost": 60.0
+}
+```
+
 ### Compare Against Baseline (Diff)
 See how your current code differs from a previous state (requires connectivity):
 ```bash
@@ -53,11 +73,21 @@ relia estimate . --diff
 
 ---
 
-## 3. Advanced: Budget Enforcement
+## 3. Advanced: Governance
 
-You can use Relia as a linter to fail if costs are too high.
+### Pre-Commit Hook (Recommended)
+The best way to save money is to prevent expensive code from ever being committed. Add this to your `.pre-commit-config.yaml`:
 
-### CLI Flags
+```yaml
+repos:
+  - repo: https://github.com/davidahmann/relia_oss
+    rev: v0.1.2
+    hooks:
+      - id: relia-estimate  # Shows you the cost
+      - id: relia-check     # Blocks you if policies fail
+```
+
+### Budget Enforcement (CLI)
 ```bash
 # Fail if monthly cost exceeds $100
 relia check . --budget 100

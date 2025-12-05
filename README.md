@@ -67,6 +67,15 @@ Know exactly what a PR will cost **before** you click merge. Supports both stand
 # Standard Estimate
 $ relia estimate
 📊 Relia Cost Estimate ...
+```
+
+```bash
+# View as JSON for pipeline parsing
+relia estimate . --format json | jq .total_cost
+```
+
+```text
+📊 Relia Cost Estimate ...
 
 # With Visual Topology
 $ relia estimate --topology
@@ -132,7 +141,20 @@ You can also run Relia without installing Python:
 docker run --rm -v $(pwd):/app relia-io/relia estimate .
 ```
 
-### 4. Add to CI/CD
+### 4. Use as Pre-Commit Hook
+
+Prevent bad commits locally by adding Relia to your `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/davidahmann/relia_oss
+    rev: v0.1.2
+    hooks:
+      - id: relia-estimate # Prints cost table on every commit
+      - id: relia-check    # Blocks commit if budget exceeded
+```
+
+### 5. Add to CI/CD
 
 Add Relia to your GitHub Actions workflow to block expensive PRs.
 
