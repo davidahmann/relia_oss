@@ -7,11 +7,12 @@ from relia.core.config import ConfigLoader
 
 
 class ReliaEngine:
-    def __init__(self, config_path: str = ".relia.yaml"):
+    def __init__(self, config_path: str = ".relia.yaml", region: str = "us-east-1"):
         self.parser = TerraformParser()
-        self.pricing_client = PricingClient()
-        self.matcher = ResourceMatcher()
-        self.config = ConfigLoader().load(config_path)
+        self.pricing = PricingClient()
+        self.matcher = ResourceMatcher(region=region)
+        self.config_loader = ConfigLoader()
+        self.config = self.config_loader.load(config_path)
 
     def run(self, path: str) -> Tuple[List[ReliaResource], Dict[str, float]]:
         # 1. Parse
@@ -29,7 +30,7 @@ class ReliaEngine:
             match_result = self.matcher.get_pricing_filters(resource)
             if match_result:
                 service_code, filters = match_result
-                price = self.pricing_client.get_product_price(service_code, filters)
+                price = self.pricing.get_product_price(service_code, filters)
                 if price:
                     costs[resource.id] = price
 

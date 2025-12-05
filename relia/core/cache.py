@@ -43,7 +43,6 @@ class PricingCache:
             """
             )
             conn.commit()
-            conn.commit()
 
     def get(self, cache_key: str) -> Optional[Dict[str, Any]]:
         """Retrieve from cache if not expired."""

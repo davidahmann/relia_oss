@@ -9,6 +9,15 @@ app = typer.Typer(
 )
 
 
+@app.callback()
+def main(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+):
+    from relia.utils.logger import setup_logger
+
+    setup_logger(verbose)
+
+
 @app.command()
 def estimate(
     path: str = typer.Argument(".", help="Path to infrastructure code"),
@@ -19,11 +28,14 @@ def estimate(
     format: str = typer.Option(
         "table", "--format", "-f", help="Output format: table, json"
     ),
+    region: str = typer.Option(
+        "us-east-1", "--region", "-r", help="AWS Region used for pricing"
+    ),
 ):
     """
     Estimate monthly cost for the user's infrastructure.
     """
-    engine = ReliaEngine()
+    engine = ReliaEngine(region=region)
     resources, costs = engine.run(path)
 
     if not resources:
