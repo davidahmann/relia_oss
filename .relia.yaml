@@ -1,0 +1,3 @@
+budget: 100.0
+rules:
+  aws_instance: 50.0 # No single instance should cost more than $50

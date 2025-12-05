@@ -1,0 +1,15 @@
+{
+    "planned_values": {
+        "root_module": {
+            "resources": [
+                {
+                    "type": "aws_instance",
+                    "name": "from_json",
+                    "values": {
+                        "instance_type": "t3.large"
+                    }
+                }
+            ]
+        }
+    }
+}

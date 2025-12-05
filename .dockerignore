@@ -1,0 +1,9 @@
+.git
+.venv
+__pycache__
+*.pyc
+.DS_Store
+pricing_cache.db
+coverage.xml
+.coverage
+htmlcov/

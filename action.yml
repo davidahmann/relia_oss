@@ -1,0 +1,29 @@
+name: 'Relia Cloud Cost Check'
+description: 'Prevents cloud cost spikes in your Pull Requests.'
+inputs:
+  path:
+    description: 'Path to Terraform files'
+    required: false
+    default: '.'
+  budget:
+    description: 'Monthly budget limit in USD'
+    required: true
+  api_key:
+    description: 'Relia API Key (Optional for now)'
+    required: false
+  markdown_report:
+    description: 'Path to save Markdown report (e.g. relia_report.md)'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - 'check'
+    - ${{ inputs.path }}
+    - '--budget'
+    - ${{ inputs.budget }}
+    - '--markdown-file'
+    - ${{ inputs.markdown_report }}
+branding:
+  icon: 'dollar-sign'
+  color: 'green'
