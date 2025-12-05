@@ -44,6 +44,28 @@
 ### Does it support Azure/GCP?
 Currently, **AWS only**. We prioritize depth over breadth. We want to solve AWS billing perfectly before moving to other clouds.
 
+5.  **Multi-Region**: We support estimates across multiple regions in the same project.
+
+## Usage & Configuration
+
+### How do I estimate Lambda or S3 costs?
+Since Terraform code doesn't tell us how many requests your Lambda receives or how many GBs are in your S3 bucket, you need to provide a **Usage Overlay**.
+1. Run `relia init` to generate a `.relia.usage.yaml` file.
+2. Define your assumptions (e.g., `storage_gb: 50`).
+See [Supported Resources](supported_resources.md) for examples.
+
+### Does Relia work offline?
+**Yes.** Relia ships with a bundled SQLite database containing prices for the most common instance types (t3, m5, etc.) in US/EU regions.
+*   If you are offline, Relia uses the bundled DB (or your local cache).
+*   If you are online, Relia fetches the latest prices from the AWS API and caches them.
+
+### Can I run checks without breaking my build?
+**Yes.** Use the `--dry-run` flag:
+```bash
+relia check --dry-run
+```
+This will print policy violations (like "Budget Exceeded") but exit with code `0`, allowing your pipeline to continue. Use this for "Warning Mode".
+
 ## Accuracy & Pricing
 
 ### How accurate is the cost estimation?

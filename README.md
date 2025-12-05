@@ -61,7 +61,10 @@ flowchart LR
 ## ✨ Features
 
 ### 1. Pre-Deploy Cost Estimation
-Know exactly what a PR will cost **before** you click merge. Supports both standard `.tf` files and `terraform plan -json` output for high accuracy.
+Know exactly what a PR will cost **before** you click merge. Supports EC2, RDS, Lambda, NAT Gateways, and more.
+👉 **[See Full List of Supported Resources](docs/supported_resources.md)**
+
+Supports both standard `.tf` files and `terraform plan -json` output:
 
 ```bash
 # Standard Estimate
