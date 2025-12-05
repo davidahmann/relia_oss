@@ -26,7 +26,60 @@ class ResourceMatcher:
             return "AmazonEC2", self._match_ec2(resource)
         elif resource.resource_type == "aws_db_instance":
             return "AmazonRDS", self._match_rds(resource)
+        elif resource.resource_type == "aws_ebs_volume":
+            return "AmazonEC2", self._match_ebs(resource)
+        elif resource.resource_type == "aws_s3_bucket":
+            return "AmazonS3", self._match_s3(resource)
         return None
+
+    def _match_s3(self, resource: ReliaResource) -> List[Dict[str, str]]:
+        # S3 Pricing is complex (Storage, Requests, Transfer).
+        # We rely on Usage Overlay for: storage_gb, monthly_requests.
+        # Fallback defaults: 1GB, 1000 requests.
+
+        # We only price STORAGE for MVP to keep it simple.
+        # "Timestorage-ByteHrs"
+
+        return [
+            {"Type": "TERM_MATCH", "Field": "serviceCode", "Value": "AmazonS3"},
+            {"Type": "TERM_MATCH", "Field": "location", "Value": self._get_location()},
+            {"Type": "TERM_MATCH", "Field": "productFamily", "Value": "Storage"},
+            {"Type": "TERM_MATCH", "Field": "storageClass", "Value": "General Purpose"},
+            {"Type": "TERM_MATCH", "Field": "volumeType", "Value": "Standard"},
+        ]
+
+    def _match_ebs(self, resource: ReliaResource) -> List[Dict[str, str]]:
+        # Attributes: type (gp2, gp3, io1, io2, sc1, st1, standard), size (GB), iops (for io*)
+        volume_type = resource.attributes.get("type", "gp2")
+        # For MVP we default to bundling size in the usage or similar,
+        # but the price is usually per GB-Month.
+        # Pricing API VolumeType Map:
+        # gp2 -> General Purpose
+        # gp3 -> General Purpose gp3
+        # io1 -> Provisioned IOPS
+        # standard -> Magnetic
+
+        type_map = {
+            "gp2": "General Purpose",
+            "gp3": "General Purpose gp3",
+            "io1": "Provisioned IOPS",
+            "io2": "System Operation",  # Approximate mapping, io2 is tricky in api
+            "st1": "Throughput Optimized HDD",
+            "sc1": "Cold HDD",
+            "standard": "Magnetic",
+        }
+
+        api_type = type_map.get(volume_type, "General Purpose")
+
+        # Note: EBS pricing is "EBS:VolumeUsage..." usually.
+        # This is strictly for the STORAGE cost per GB-Month.
+
+        return [
+            {"Type": "TERM_MATCH", "Field": "serviceCode", "Value": "AmazonEC2"},
+            {"Type": "TERM_MATCH", "Field": "location", "Value": self._get_location()},
+            {"Type": "TERM_MATCH", "Field": "productFamily", "Value": "Storage"},
+            {"Type": "TERM_MATCH", "Field": "volumeType", "Value": api_type},
+        ]
 
     def _match_rds(self, resource: ReliaResource) -> List[Dict[str, str]]:
         # Example: db.t3.micro

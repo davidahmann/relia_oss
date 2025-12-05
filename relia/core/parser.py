@@ -67,26 +67,35 @@ class TerraformParser:
             with open(file_path, "r") as f:
                 data = json.load(f)
 
-            # Navigate to resources: planned_values -> root_module -> resources
-            # This handles flat structures. Modules need recursion (omitted for MVP).
+            # Navigate to resources: planned_values -> root_module
             root = data.get("planned_values", {}).get("root_module", {})
-            raw_resources = root.get("resources", [])
 
-            for r in raw_resources:
-                # r has "type", "name", "values" (attributes)
-                r_type = r.get("type")
-                r_name = r.get("name")
-                r_values = r.get("values", {})
+            def extract_resources(module: dict) -> List[ReliaResource]:
+                found = []
+                # 1. Local resources
+                for r in module.get("resources", []):
+                    r_type = r.get("type")
+                    r_name = r.get("name")
+                    r_values = r.get("values", {})
 
-                if r_type and r_name:
-                    resources.append(
-                        ReliaResource(
-                            resource_type=r_type,
-                            resource_name=r_name,
-                            attributes=r_values,
-                            file_path=file_path,
+                    if r_type and r_name:
+                        found.append(
+                            ReliaResource(
+                                resource_type=r_type,
+                                # Use address if available for uniqueness, else name
+                                resource_name=r.get("address", r_name),
+                                attributes=r_values,
+                                file_path=file_path,
+                            )
                         )
-                    )
+
+                # 2. Child modules (Recursion)
+                for child in module.get("child_modules", []):
+                    found.extend(extract_resources(child))
+
+                return found
+
+            resources = extract_resources(root)
 
             return resources
         except Exception as e:

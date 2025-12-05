@@ -141,6 +141,33 @@ You can also run Relia without installing Python:
 docker run --rm -v $(pwd):/app relia-io/relia estimate .
 ```
 
+### Advanced Usage
+
+#### Handling Complex Variables & Modules
+For complex projects using variables, locals, or modules, Relia supports Terraform Plan JSON output.
+1. Generate the plan JSON:
+   ```bash
+   terraform plan -out=tfplan
+   terraform show -json tfplan > plan.json
+   ```
+2. Estimate costs using the JSON plan:
+   ```bash
+   relia estimate plan.json
+   ```
+
+#### Usage Assumptions (S3, Lambda, etc.)
+Some resources (like S3 or Lambda) depend on usage metrics not present in Terraform. You can define these in `.relia.usage.yaml`:
+
+**Example `.relia.usage.yaml`:**
+```yaml
+usage:
+  aws_s3_bucket.my_bucket:
+    storage_gb: 500
+    monthly_requests: 10000
+```
+
+Relia will automatically load this file and apply the usage data (e.g., 500GB of storage) when calculating costs.
+
 ### 4. Use as Pre-Commit Hook
 
 Prevent bad commits locally by adding Relia to your `.pre-commit-config.yaml`:
@@ -148,11 +175,23 @@ Prevent bad commits locally by adding Relia to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/davidahmann/relia_oss
-    rev: v0.1.2
+    rev: v0.2.1
     hooks:
       - id: relia-estimate # Prints cost table on every commit
       - id: relia-check    # Blocks commit if budget exceeded
 ```
+
+## Maintenance
+
+### Updating the Bundled Pricing Database
+Relia ships with a lightweight, bundled pricing database (SQLite) for offline usage. To update this database with new mocked values or seed data:
+
+1. Edit [`scripts/seed_pricing.py`](scripts/seed_pricing.py) to add new resources or update prices.
+2. Run the script:
+   ```bash
+   python scripts/seed_pricing.py
+   ```
+3. Commit the updated `relia/core/bundled_pricing.db`.
 
 ### 5. Add to CI/CD
 

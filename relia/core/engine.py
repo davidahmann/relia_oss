@@ -4,6 +4,7 @@ from relia.core.parser import TerraformParser
 from relia.core.pricing import PricingClient
 from relia.core.matcher import ResourceMatcher
 from relia.core.config import ConfigLoader
+from relia.core.usage import UsageLoader
 
 
 class ReliaEngine:
@@ -13,6 +14,8 @@ class ReliaEngine:
         self.matcher = ResourceMatcher(region=region)
         self.config_loader = ConfigLoader()
         self.config = self.config_loader.load(config_path)
+        self.usage_loader = UsageLoader()
+        self.usage_loader.load()
 
     def run(self, path: str) -> Tuple[List[ReliaResource], Dict[str, float]]:
         # 1. Parse
@@ -27,12 +30,34 @@ class ReliaEngine:
         # 2. Price
         costs = {}
         for resource in resources:
+            # Apply Usage Overlay
+            resource.attributes = self.usage_loader.apply_usage(
+                resource.id, resource.attributes
+            )
+
             match_result = self.matcher.get_pricing_filters(resource)
             if match_result:
                 service_code, filters = match_result
-                price = self.pricing.get_product_price(service_code, filters)
-                if price:
-                    costs[resource.id] = price
+                unit_price = self.pricing.get_product_price(service_code, filters)
+
+                if unit_price is not None:
+                    # Calculate quantity based on resource type
+                    if resource.resource_type in ["aws_instance", "aws_db_instance"]:
+                        # Hourly -> Monthly
+                        monthly_cost = unit_price * 730
+                    elif resource.resource_type == "aws_ebs_volume":
+                        # GB-Mo -> Monthly (multiply by size)
+                        size = int(resource.attributes.get("size", 8))  # Default
+                        monthly_cost = unit_price * size
+                    elif resource.resource_type == "aws_s3_bucket":
+                        # GB-Mo -> Monthly
+                        # Default to 0 if not in usage file, to avoid scary assumptions
+                        storage_gb = int(resource.attributes.get("storage_gb", 0))
+                        monthly_cost = unit_price * storage_gb
+                    else:
+                        monthly_cost = unit_price  # Default / Fallback
+
+                    costs[resource.id] = monthly_cost
 
         return resources, costs
 

@@ -45,6 +45,16 @@ Visualize your cost breakdown as a tree structure:
 relia estimate . --topology
 ```
 
+### Global Options
+You can configure behavior with global flags:
+```bash
+# Enable verbose logging for debugging
+relia estimate . --verbose
+
+# Specify a target AWS region (Default: us-east-1)
+relia estimate . --region eu-central-1
+```
+
 ### Output Formats
 Relia produces beautiful tables for humans, but you can also get machine-readable JSON for your pipelines:
 ```bash
@@ -73,7 +83,36 @@ relia estimate . --diff
 
 ---
 
-## 3. Advanced: Governance
+## 3. Advanced Usage
+
+### Handling Complex Variables & Modules
+For complex projects using variables, locals, or modules, Relia supports Terraform Plan JSON output.
+1. Generate the plan JSON:
+   ```bash
+   terraform plan -out=tfplan
+   terraform show -json tfplan > plan.json
+   ```
+2. Estimate costs using the JSON plan:
+   ```bash
+   relia estimate plan.json
+   ```
+
+### Usage Assumptions (S3, Lambda, etc.)
+Some resources (like S3 or Lambda) depend on usage metrics not present in Terraform. You can define these in `.relia.usage.yaml`:
+
+**Example `.relia.usage.yaml`:**
+```yaml
+usage:
+  aws_s3_bucket.my_bucket:
+    storage_gb: 500
+    monthly_requests: 10000
+```
+
+Relia will automatically load this file and apply the usage data (e.g., 500GB of storage) when calculating costs.
+
+---
+
+## 4. Governance
 
 ### Pre-Commit Hook (Recommended)
 The best way to save money is to prevent expensive code from ever being committed. Add this to your `.pre-commit-config.yaml`:
@@ -81,7 +120,7 @@ The best way to save money is to prevent expensive code from ever being committe
 ```yaml
 repos:
   - repo: https://github.com/davidahmann/relia_oss
-    rev: v0.1.2
+    rev: v0.2.1
     hooks:
       - id: relia-estimate  # Shows you the cost
       - id: relia-check     # Blocks you if policies fail
@@ -110,7 +149,7 @@ relia check .
 
 ---
 
-## 4. CI/CD Integration (GitHub Actions)
+## 5. CI/CD Integration (GitHub Actions)
 
 To prevent expensive merges, add Relia to your Pull Request workflow.
 

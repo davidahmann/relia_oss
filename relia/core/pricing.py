@@ -79,7 +79,7 @@ class PricingClient:
 
             price_per_unit = price_dimension.get("pricePerUnit", {}).get("USD")
             if price_per_unit:
-                return float(price_per_unit) * 730  # 730 hours/month
+                return float(price_per_unit)
 
         except Exception as e:
             print(f"Error parsing price JSON: {e}")
