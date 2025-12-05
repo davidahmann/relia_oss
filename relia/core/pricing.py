@@ -2,6 +2,7 @@ import boto3
 import json
 from typing import Optional, Dict, List
 from relia.core.cache import PricingCache
+from relia.utils.logger import logger
 
 
 class PricingClient:
@@ -10,10 +11,13 @@ class PricingClient:
     Handles caching and filtering.
     """
 
-    def __init__(self, region="us-east-1"):
+    def __init__(self, region="us-east-1", cache_path: Optional[str] = None):
         # Pricing API is only available in us-east-1 and ap-south-1
         self.client = boto3.client("pricing", region_name="us-east-1")
-        self.cache = PricingCache()
+        from pathlib import Path
+
+        path = Path(cache_path) if cache_path else None
+        self.cache = PricingCache(db_path=path)
 
     def get_product_price(
         self, service_code: str, filters: List[Dict[str, str]]
@@ -54,7 +58,7 @@ class PricingClient:
 
         except Exception as e:
             # Fallback or log error
-            print(f"Error fetching price for {cache_key}: {e}")
+            logger.warning(f"Error fetching price for {cache_key}: {e}")
             return None
 
     def _extract_price(self, product_data: Dict) -> Optional[float]:
@@ -82,7 +86,7 @@ class PricingClient:
                 return float(price_per_unit)
 
         except Exception as e:
-            print(f"Error parsing price JSON: {e}")
+            logger.warning(f"Error parsing price JSON: {e}")
             return None
 
         return None

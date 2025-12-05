@@ -175,7 +175,7 @@ Prevent bad commits locally by adding Relia to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/davidahmann/relia_oss
-    rev: v0.2.2
+    rev: v0.3.0
     hooks:
       - id: relia-estimate # Prints cost table on every commit
       - id: relia-check    # Blocks commit if budget exceeded
@@ -186,8 +186,8 @@ repos:
 ### Updating the Bundled Pricing Database
 Relia ships with a lightweight, bundled pricing database (SQLite) for offline usage. To update this database with new mocked values or seed data:
 
-1. Edit [`scripts/seed_pricing.py`](scripts/seed_pricing.py) to add new resources or update prices.
-2. Run the script:
+1. Ensure you have AWS credentials configured.
+2. Run the script to fetch fresh prices from AWS (US/EU regions):
    ```bash
    python scripts/seed_pricing.py
    ```

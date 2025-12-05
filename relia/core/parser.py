@@ -2,6 +2,7 @@ import hcl2
 from typing import List
 from relia.models import ReliaResource
 from pathlib import Path
+from relia.utils.logger import logger
 
 
 class TerraformParser:
@@ -53,8 +54,7 @@ class TerraformParser:
 
         except Exception as e:
             # We don't want to crash the whole scan on one bad file
-            # In a real app we'd log this
-            print(f"Error parsing {file_path}: {e}")
+            logger.warning(f"Error parsing {file_path}: {e}")
             return []
 
     def parse_plan_json(self, file_path: str) -> List[ReliaResource]:
@@ -99,5 +99,42 @@ class TerraformParser:
 
             return resources
         except Exception as e:
-            print(f"Error parsing JSON plan {file_path}: {e}")
+            logger.warning(f"Error parsing JSON plan {file_path}: {e}")
             return []
+
+    def extract_provider_region(self, directory: str) -> str | None:
+        """
+        Scans .tf files in directory for a 'provider "aws"' block with a region.
+        Returns the first valid region found.
+        """
+        path = Path(directory)
+        if not path.exists():
+            return None
+
+        # Reuse parsing logic? Or simpler scan?
+        # Parse logic uses hcl2.load which is robust.
+        # But parsing *all* files can be slow.
+        # For MVP, just iterate parsing until we find one.
+
+        for file_path in path.rglob("*.tf"):
+            try:
+                with open(file_path, "r") as f:
+                    data = hcl2.load(f)
+
+                # Check providers
+                # Structure: {'provider': [{'aws': {'region': '...'}}]}
+                providers = data.get("provider", [])
+                for provider in providers:
+                    if "aws" in provider:
+                        region = provider["aws"].get("region")
+                        if (
+                            region
+                            and isinstance(region, str)
+                            and not region.startswith("$")
+                        ):
+                            # Found explicit string region
+                            return region
+            except Exception:
+                continue
+
+        return None

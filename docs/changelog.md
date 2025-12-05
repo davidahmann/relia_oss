@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.0 (2025-12-05) "Pragmatic Improvements"
+*   **Feature**: **NAT Gateway**: Added support for hourly cost and data transfer warnings (Bill Shock prevention).
+*   **Feature**: **Lambda**: Added support for usage-based pricing (Duration/Requests).
+*   **Feature**: **ALB/ELB**: Added support for Load Balancer hourly costs.
+*   **Enhancement**: **Accuracy**: Auto-detects region from `provider "aws"` block and supports Multi-AZ RDS.
+*   **Enhancement**: **Developer Experience**: Added `relia init`, `relia check --dry-run`, and better variable warnings.
+*   **Fix**: **Foundation**: Robust bundled pricing DB seeding, structured logging, and verified `--verbose`.
+
 ## v0.2.2 (2025-12-05) "Expansion Pack"
 *   **Feature**: **Resource Expansion**: Added support for **EBS** (`aws_ebs_volume`).
 *   **Feature**: **Usage Overlay**: Introduced `.relia.usage.yaml` to support usage-based resources like **S3** (`aws_s3_bucket`) and Lambda.

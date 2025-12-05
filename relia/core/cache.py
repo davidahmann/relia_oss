@@ -17,22 +17,27 @@ class PricingCache:
     DB_PATH = Path.home() / ".relia" / "pricing_cache.db"
     TTL_SECONDS = 86400 * 7  # 7 days
 
-    def __init__(self):
+    def __init__(self, db_path: Optional[Path] = None):
+        self.db_path = db_path or self.DB_PATH
         self._init_db()
 
     def _init_db(self):
-        self.DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Check if we have a bundled DB (e.g. adjacent to this file)
         # In a real build, we'd copy this to the package dir
         bundled_db = Path(__file__).parent / "bundled_pricing.db"
 
-        if not self.DB_PATH.exists() and bundled_db.exists():
+        if (
+            not self.db_path.exists()
+            and bundled_db.exists()
+            and self.db_path == self.DB_PATH
+        ):
             import shutil
 
-            shutil.copy2(bundled_db, self.DB_PATH)
+            shutil.copy2(bundled_db, self.db_path)
 
-        with sqlite3.connect(self.DB_PATH) as conn:
+        with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS pricing (
@@ -46,7 +51,7 @@ class PricingCache:
 
     def get(self, cache_key: str) -> Optional[Dict[str, Any]]:
         """Retrieve from cache if not expired."""
-        with sqlite3.connect(self.DB_PATH) as conn:
+        with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute(
                 "SELECT price_data, timestamp FROM pricing WHERE cache_key = ?",
                 (cache_key,),
@@ -67,7 +72,7 @@ class PricingCache:
 
     def set(self, cache_key: str, data: Dict[str, Any]):
         """Save to cache."""
-        with sqlite3.connect(self.DB_PATH) as conn:
+        with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 "INSERT OR REPLACE INTO pricing (cache_key, price_data, timestamp) VALUES (?, ?, ?)",
                 (cache_key, json.dumps(data), time.time()),

@@ -120,7 +120,7 @@ The best way to save money is to prevent expensive code from ever being committe
 ```yaml
 repos:
   - repo: https://github.com/davidahmann/relia_oss
-    rev: v0.2.2
+    rev: v0.3.0
     hooks:
       - id: relia-estimate  # Shows you the cost
       - id: relia-check     # Blocks you if policies fail

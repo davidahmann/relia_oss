@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "relia_oss"
-version = "0.2.2"
+version = "0.3.0"
 description = "Cloud cost prevention and optimization tool."
 authors = ["Relia Team"]
 readme = "README.md"
@@ -34,6 +34,10 @@ ruff = "^0.1.0"
 mypy = "^1.0.0"
 pre-commit = "^3.5.0"
 pytest-cov = "^7.0.0"
+
+[tool.pytest.ini_options]
+addopts = "--cov=relia --cov-fail-under=70"
+testpaths = ["tests"]
 
 [build-system]
 requires = ["poetry-core"]

@@ -87,6 +87,9 @@ def check(
     markdown_report: str = typer.Option(
         None, "--markdown-file", help="Output report to markdown file"
     ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Simulate check without non-zero exit code"
+    ),
 ):
     """
     Check if infrastructure cost exceeds budget or violates policies.
@@ -140,7 +143,52 @@ def check(
         )
 
     if exit_code != 0:
-        raise typer.Exit(code=exit_code)
+        if dry_run:
+            typer.echo("⚠️  Check failed, but --dry-run is enabled. Exiting 0.")
+        else:
+            raise typer.Exit(code=exit_code)
+
+
+@app.command()
+def init():
+    """
+    Initialize Relia configuration files (.relia.yaml, .relia.usage.yaml).
+    """
+    from pathlib import Path
+
+    config_path = Path(".relia.yaml")
+    usage_path = Path(".relia.usage.yaml")
+
+    # Create Config
+    if not config_path.exists():
+        config_content = """# Relia Configuration
+budget: 50.0 # Monthly budget in USD
+policy:
+  max_resource_cost: 20.0
+"""
+        with open(config_path, "w") as f:
+            f.write(config_content)
+        typer.echo(f"✅ Created {config_path}")
+    else:
+        typer.echo(f"⚠️  {config_path} already exists. Skipping.")
+
+    # Create Usage
+    if not usage_path.exists():
+        usage_content = """# Relia Usage Overlay
+# Define usage assumptions for resources here.
+usage:
+  aws_lambda_function.example:
+    monthly_requests: 1000000
+    avg_duration_ms: 200
+  aws_s3_bucket.example:
+    storage_gb: 50
+    monthly_requests: 10000
+"""
+        with open(usage_path, "w") as f:
+            f.write(usage_content)
+        typer.echo(f"✅ Created {usage_path}")
+    else:
+        typer.echo(f"⚠️  {usage_path} already exists. Skipping.")
 
 
 @app.command()
