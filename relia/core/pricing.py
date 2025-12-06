@@ -1,4 +1,4 @@
-import boto3
+import boto3  # type: ignore
 import json
 from typing import Optional, Dict, List
 from relia.core.cache import PricingCache
