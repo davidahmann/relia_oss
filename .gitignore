@@ -27,6 +27,9 @@ poetry.lock
 
 # Relia
 .relia/
+report.md
+relia_report.md
+*.html
 
 # Coverage
 .coverage
