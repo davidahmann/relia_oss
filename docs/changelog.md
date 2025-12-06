@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.2.3 (2025-12-06) "SEO Completeness"
+## v1.2.4 (2025-12-06) "Offline Mode Fix"
+**Bug Fixes**
+*   **Packaging**: Fixed an issue where `bundled_pricing.db` was excluded from the PyPI package, causing Offline Mode to fail in some environments.
+
+---
+
 **Linking & Canonicalization**
 *   **Canonicals**: Added `<link rel="canonical">` tags to key documentation pages to prevent duplicate content issues.
 *   **Internal Linking**: Added "Related Documentation" footers to all pages to improve crawlability and user navigation flow.

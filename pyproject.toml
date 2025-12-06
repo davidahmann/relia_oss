@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "relia_oss"
-version = "1.2.3"
+version = "1.2.4"
 description = "Cloud cost prevention and optimization tool."
 authors = ["Relia Team"]
 readme = "README.md"
@@ -17,7 +17,10 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Utilities",
 ]
-packages = [{include = "relia"}]
+packages = [
+    { include = "relia" },
+    { include = "relia/core/bundled_pricing.db" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
