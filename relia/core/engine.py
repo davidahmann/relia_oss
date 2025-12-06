@@ -5,6 +5,7 @@ from relia.core.pricing import PricingClient
 from relia.core.matcher import ResourceMatcher
 from relia.core.config import ConfigLoader
 from relia.core.usage import UsageLoader
+from relia.core.advisor import ReliaAdvisor
 from relia.utils.logger import logger
 from relia.core.constants import (
     HOURS_PER_MONTH,
@@ -40,6 +41,7 @@ class ReliaEngine:
         self.config = self.config_loader.load(config_path)
         self.usage_loader = UsageLoader()
         self.usage_loader.load()
+        self.advisor = ReliaAdvisor()
 
     def _price_ec2(self, unit_price: float, resource: ReliaResource) -> float:
         return unit_price * HOURS_PER_MONTH
@@ -123,6 +125,12 @@ class ReliaEngine:
                         monthly_cost = unit_price
 
                     costs[resource.id] = monthly_cost
+
+        # Run Active Advisor
+        all_suggestions = self.advisor.analyze(resources)
+        for r in resources:
+            if r.id in all_suggestions:
+                r.suggestions = all_suggestions[r.id]
 
         return resources, costs
 

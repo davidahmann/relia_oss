@@ -1,7 +1,20 @@
 # Changelog
 
+## v1.1.0 (2025-12-06) "The PLG Release"
+**Major Features: Active Advisor & Reports**
+
+### ✨ Features
+- **Active Advisor**: Proactively suggests cost optimizations:
+  - **EBS**: Recommends upgrading from `gp2` to `gp3` (up to 20% savings).
+  - **EC2**: Suggests newer generation instances (`t2` -> `t3`) and Graviton tips.
+- **Shareable Reports**: Generate beautiful, self-contained HTML reports with `--format html --out report.html`. Perfect for sharing with finance or managers.
+
+### 📝 Improvements
+- **Output**: Enhanced CLI tables to display "Tips" when opportunities are found.
+
+---
+
 ## v1.0.1 (2025-12-06)
-*   **Fix**: Corrected PyPI release to include all latest type stubs and fixes.
 
 ## v1.0.0 (2025-12-06)
 **Major Release: Production Ready**

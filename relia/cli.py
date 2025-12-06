@@ -31,6 +31,7 @@ def estimate(
     region: str = typer.Option(
         "us-east-1", "--region", "-r", help="AWS Region used for pricing"
     ),
+    out: str = typer.Option(None, "--out", "-o", help="Output file path"),
 ):
     """
     Estimate monthly cost for the user's infrastructure.
@@ -58,12 +59,25 @@ def estimate(
                     "type": r.resource_type,
                     "cost": costs.get(r.id, 0.0),
                     "attributes": r.attributes,
+                    "suggestions": r.suggestions,
                 }
                 for r in resources
             ],
             "total_cost": sum(costs.values()),
         }
         typer.echo(json.dumps(output_data, indent=2))
+        return
+
+    if format == "html":
+        from relia.utils.output import generate_html_report
+
+        html = generate_html_report(resources, costs)
+        if out:
+            with open(out, "w") as f:
+                f.write(html)
+            typer.echo(f"✅ Report saved to {out}")
+        else:
+            typer.echo(html)
         return
 
     print_estimate(resources, costs)

@@ -23,6 +23,7 @@ def test_estimate_json_format():
         mock_res.resource_type = "aws_instance"
         mock_res.resource_name = "test"  # Needed for JSON output
         mock_res.attributes = {}  # Needed to be serializable dict
+        mock_res.suggestions = []  # Needed serializable list
 
         mock_instance.run.return_value = ([mock_res], {"aws_instance.test": 10.0})
 

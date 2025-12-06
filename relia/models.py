@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, model_validator
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 
 
 class ReliaResource(BaseModel):
@@ -7,7 +7,8 @@ class ReliaResource(BaseModel):
     resource_type: str = Field(..., description="Terraform resource type")
     resource_name: str = Field(..., description="Terraform resource name")
     attributes: Dict[str, Any] = Field(default_factory=dict)
-    file_path: str = Field(..., description="Source file path")
+    file_path: Optional[str] = None
+    suggestions: List[str] = []
 
     @model_validator(mode="after")
     def compute_id(self) -> "ReliaResource":
