@@ -1,4 +1,10 @@
-# The Philosophy of Relia: Shift Left FinOps
+---
+title: "The Relia Philosophy: Shift Left FinOps"
+description: "Why we built Relia. Moving cost awareness to the Pull Request to prevent bill shock and empower engineers."
+keywords: shift left finops, cloud cost philosophy, devops cost culture
+---
+
+# The Relia Philosophy: Shift Left FinOps
 
 Relia was built on three core beliefs about the future of cloud engineering.
 

@@ -1,4 +1,10 @@
-# Troubleshooting
+---
+title: "Troubleshooting Relia: Common Issues & Solutions"
+description: "Fix common Relia errors like AWS SSO token expiry, missing resource costs, and installation issues."
+keywords: troubleshoot relia, aws sso error, resource not found pricing
+---
+
+# Troubleshooting Relia: Common Issues & Solutions
 
 ## AWS SSO Token Expiry
 If you see errors like:

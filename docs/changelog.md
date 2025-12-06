@@ -1,6 +1,13 @@
 # Changelog
 
-## v1.1.9 (2025-12-06) "Advisor Intelligence"
+## v1.2.0 (2025-12-06) "SEO Foundation"
+**Technical SEO**
+*   **Frontmatter**: Added optimized `title`, `description`, and `keywords` YAML frontmatter to all documentation pages for better SERP visibility.
+*   **H1 Structure**: Fixed header hierarchy in troubleshooting and philosophy documentation.
+*   **Crawler Guidance**: Added `sitemap.xml` and `robots.txt` to `docs/` for search engine indexing.
+
+---
+
 **New Features**
 *   **Active Advisor (Lambda)**: Now proactively suggests switching `x86_64` functions to `arm64` (Graviton2) for ~20% cost savings.
 *   **Active Advisor (RDS)**:

@@ -1,5 +1,10 @@
-# Architecture
+---
+title: "Relia Architecture: How Terraform Cost Estimation Works"
+description: "Deep dive into Relia's architecture: Parser, Matcher, and Pricing Engine. Understand how costs are calculated securely."
+keywords: relia architecture, cost estimation logic, pricing engine, terraform parser
+---
 
+# Architecture Overview
 Relia follows a linear pipeline architecture designed for speed and determinism.
 
 ```mermaid

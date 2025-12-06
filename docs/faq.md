@@ -1,3 +1,9 @@
+---
+title: "Relia FAQ: Terraform Cost Accuracy, Offline Mode & Comparisons"
+description: "Answers to common questions about Relia. Learn about pricing accuracy, offline mode, and how it compares to other FinOps tools."
+keywords: relia faq, terraform cost accuracy, offline cloud cost
+---
+
 # Frequently Asked Questions (FAQ)
 
 <script type="application/ld+json">

@@ -1,3 +1,9 @@
+---
+title: "Supported AWS Resources for Cost Estimation | Relia"
+description: "List of AWS resources supported by Relia cost estimation, including EC2, RDS, Lambda, and more. Learn how usage is calculated."
+keywords: supported resources, ec2 cost, rds pricing, lambda cost estimator
+---
+
 # Supported Resources & Usage Guide
 
 Relia supports estimating costs for the following AWS resources. Some resources (like EC2) are estimated automatically from Terraform attributes, while others (like S3 or Lambda) require **Usage Overlays** to be accurate.

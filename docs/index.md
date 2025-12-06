@@ -1,3 +1,9 @@
+---
+title: "Relia - Free Terraform Cost Estimation Tool"
+description: "Prevent AWS bill shock with Relia. Pre-deployment cost estimation for Terraform. Free, open-source FinOps tool for CI/CD."
+keywords: terraform cost estimation, aws cost calculator, infrastructure cost, finops tools, cloud cost prevention
+---
+
 # Relia: Open Source Cloud Cost Prevention for Terraform
 
 > **"The ESLint for Cloud Costs. Stop paying the infrastructure tax."**
