@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.1.7 (2025-12-06) "Pipeline Upgrade"
+## v1.1.8 (2025-12-06) "Coverage Expansion"
+**Tests**
+*   **HTML Reporting**: Added dedicated tests (`tests/test_output_html.py`) to verify HTML report structure, version injection, and budget alerts using `BeautifulSoup` assertions logic (simulated).
+*   **Regression Tests**: Expanded regression suite coverage.
+
+---
+
 **Infrastructure**
 *   **CI/CD**: Upgraded GitHub Actions to latest versions (checkout@v4, setup-python@v5).
 *   **Security**: Added `bandit` (SAST) and `pip-audit` (Dependency Check) to the standard test workflow.
