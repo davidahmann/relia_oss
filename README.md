@@ -34,7 +34,7 @@ Existing tools (CloudHealth, Vantage) are **reactive**. They tell you *after* yo
 
 ## 🧩 How It Works
 
-Relia runs as a CLI tool in your local environment or CI pipeline to minimize the feedback loop. See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
+Relia runs as a CLI tool in your local environment or CI pipeline to minimize the feedback loop.
 
 ```mermaid
 flowchart LR
