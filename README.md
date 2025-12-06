@@ -62,6 +62,9 @@ flowchart LR
 
 ### 1. Pre-Deploy Cost Estimation
 Know exactly what a PR will cost **before** you click merge. Supports EC2, RDS, Lambda, NAT Gateways, and more.
+-   **Active Advisor**: Proactively suggests cost optimizations (e.g., "Upgrade gp2 to gp3 for 20% savings").
+-   **Shareable Reports**: Generate beautiful HTML dashboards with topology graphs and cost breakdowns for your team.
+-   **Prevent Bill Shock**: Catch expensive resources in PRs before they are merged.
 👉 **[See Full List of Supported Resources](docs/supported_resources.md)**
 
 Supports both standard `.tf` files and `terraform plan -json` output:
@@ -123,6 +126,9 @@ pip install relia
 # or
 poetry add relia
 ```
+
+# Generate a shareable HTML dashboard
+relia estimate . --format html --out cost-report.html
 
 ### 2. Run Locally
 

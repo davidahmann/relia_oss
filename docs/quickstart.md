@@ -89,7 +89,27 @@ relia estimate . --diff
 
 ---
 
-## 4. Advanced Usage
+## 4. Active Advisor & Reports
+
+Relia goes beyond simple estimation by proactively suggesting ways to save money and enabling easy sharing of cost data.
+
+### Cost Optimizations
+Relia automatically scans for common cost inefficiencies. Look for the "💡" icon in your output.
+*   **EBS Volumes**: Suggests upgrading `gp2` to `gp3` (up to 20% cheaper).
+*   **EC2 Instances**: Recommends modern generations (e.g., `t2` -> `t3`) and Graviton options.
+
+### Shareable HTML Reports
+Generate a premium, self-contained HTML dashboard for your team or finance department. This report includes:
+*   **Infrastructure Topology Grpah** (Mermaid.js)
+*   **Interactive Cost Table** (Sort & Filter)
+*   **Optimization Tips**
+
+```bash
+# Generate report.html
+relia estimate . --format html --out report.html
+```
+
+## 5. Advanced Usage
 
 ### Handling Complex Variables & Modules
 For complex projects using variables, locals, or modules, Relia supports Terraform Plan JSON output.
