@@ -196,6 +196,16 @@ class ResourceMatcher:
             {"Type": "TERM_MATCH", "Field": "group", "Value": "AWS-Lambda-Duration"},
         ]
 
+    def get_lambda_request_filters(
+        self, resource: ReliaResource
+    ) -> List[Dict[str, str]]:
+        return [
+            {"Type": "TERM_MATCH", "Field": "serviceCode", "Value": "AWSLambda"},
+            {"Type": "TERM_MATCH", "Field": "location", "Value": self._get_location()},
+            {"Type": "TERM_MATCH", "Field": "productFamily", "Value": "Serverless"},
+            {"Type": "TERM_MATCH", "Field": "group", "Value": "AWS-Lambda-Requests"},
+        ]
+
     def _match_lb(self, resource: ReliaResource) -> List[Dict[str, str]]:
         # Handles aws_lb (ALB/NLB) and aws_elb (CLB).
         # Attributes: load_balancer_type (application, network, gateway). Default application.

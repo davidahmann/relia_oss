@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.1.1 (2025-12-06) "PLG Polish"
+## v1.1.2 (2025-12-06) "API Purity"
+**Fix: Lambda Pricing Accuracy**
+*   **API-Driven Lambda Requests**: Removed hardcoded $0.20/million constant for Lambda requests. Now fetches the exact real-time price from AWS API.
+
+---
+
 **Enhancement: Premium Reports & Expanded Advisor**
 
 ### ✨ Features

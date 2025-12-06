@@ -4,9 +4,6 @@ from relia.core.parser import TerraformParser
 from relia.core.pricing import PricingClient
 from relia.core.matcher import ResourceMatcher
 from relia.core.config import ConfigLoader
-from relia.core.usage import UsageLoader
-from relia.core.advisor import ReliaAdvisor
-from relia.utils.logger import logger
 from relia.core.constants import (
     HOURS_PER_MONTH,
     DEFAULT_EBS_SIZE_GB,
@@ -14,8 +11,10 @@ from relia.core.constants import (
     DEFAULT_LAMBDA_REQUESTS,
     DEFAULT_LAMBDA_DURATION_MS,
     DEFAULT_LAMBDA_MEMORY_MB,
-    LAMBDA_REQUEST_PRICE_PER_MILLION,
 )
+from relia.core.usage import UsageLoader
+from relia.core.advisor import ReliaAdvisor
+from relia.utils.logger import logger
 
 
 def _safe_int(value, default=0):
@@ -75,7 +74,17 @@ class ReliaEngine:
 
         gb_seconds = requests * (duration_ms / 1000) * (memory_mb / 1024)
         compute_cost = unit_price * gb_seconds
-        request_cost = (requests / 1_000_000) * LAMBDA_REQUEST_PRICE_PER_MILLION
+
+        # Fetch Request Price dynamically
+        req_filters = self.matcher.get_lambda_request_filters(resource)
+        req_unit_price = self.pricing.get_product_price("AWSLambda", req_filters)
+
+        # Fallback if API fails (safe default but logged)
+        if req_unit_price is None:
+            logger.debug(f"Could not fetch Lambda request price for {resource.id}")
+            req_unit_price = 0.0000002  # $0.20 per million fallback
+
+        request_cost = requests * req_unit_price
         return compute_cost + request_cost
 
     def _get_pricing_strategy(self, resource_type: str):
