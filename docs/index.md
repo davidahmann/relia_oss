@@ -97,3 +97,17 @@ We love contributions! Please read our [CONTRIBUTING.md](https://github.com/davi
   "url": "https://davidahmann.github.io/relia_oss/"
 }
 </script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Relia",
+  "url": "https://davidahmann.github.io/relia_oss/",
+  "logo": "https://davidahmann.github.io/relia_oss/logo.png",
+  "sameAs": [
+    "https://github.com/davidahmann/relia_oss",
+    "https://pypi.org/project/relia/"
+  ]
+}
+</script>

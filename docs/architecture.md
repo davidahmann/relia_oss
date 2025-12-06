@@ -47,3 +47,14 @@ flowchart LR
 *   **Commands**:
     *   `estimate`: Shows cost table, topology tree (`--topology`), and diffs (`--diff`).
     *   `check`: Enforces budget for CI/CD integration.
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Relia Architecture: How Terraform Cost Estimation Works",
+  "description": "Technical deep-dive into Relia's parser, matcher, and pricing engine for estimating AWS infrastructure costs.",
+  "author": {"@type": "Organization", "name": "Relia Team"},
+  "keywords": "terraform parser, aws pricing api, cost estimation architecture"
+}
+</script>

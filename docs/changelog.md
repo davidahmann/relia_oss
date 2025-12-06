@@ -1,6 +1,13 @@
 # Changelog
 
-## v1.2.0 (2025-12-06) "SEO Foundation"
+## v1.2.1 (2025-12-06) "AEO Schema"
+**Structured Data (AEO)**
+*   **HowTo Schema**: Added structured data to `docs/quickstart.md` to help AI assistants extract installation steps.
+*   **TechArticle Schema**: Added schema to `docs/architecture.md`.
+*   **Organization Schema**: Added Identity schema to `docs/index.md` for Knowledge Graph optimizaton.
+
+---
+
 **Technical SEO**
 *   **Frontmatter**: Added optimized `title`, `description`, and `keywords` YAML frontmatter to all documentation pages for better SERP visibility.
 *   **H1 Structure**: Fixed header hierarchy in troubleshooting and philosophy documentation.

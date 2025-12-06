@@ -211,3 +211,33 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body-file: 'relia_report.md'
 ```
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Estimate Terraform Infrastructure Costs",
+  "description": "Install Relia and calculate AWS costs from Terraform files in under 5 minutes.",
+  "totalTime": "PT5M",
+  "tool": [{
+    "@type": "HowToTool",
+    "name": "Relia CLI"
+  }],
+  "step": [{
+    "@type": "HowToStep",
+    "name": "Install Relia",
+    "text": "Run pip install relia to install the Relia cost estimation CLI.",
+    "url": "https://davidahmann.github.io/relia_oss/quickstart/#1-installation"
+  }, {
+    "@type": "HowToStep",
+    "name": "Run Cost Estimate",
+    "text": "Navigate to your Terraform directory and run relia estimate . to see monthly costs.",
+    "url": "https://davidahmann.github.io/relia_oss/quickstart/#3-basic-usage-estimating-costs"
+  }, {
+    "@type": "HowToStep",
+    "name": "Enforce Budget",
+    "text": "Use relia check --budget 500 to block deployments over $500/month.",
+    "url": "https://davidahmann.github.io/relia_oss/quickstart/#5-governance"
+  }]
+}
+</script>
