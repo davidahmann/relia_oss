@@ -81,7 +81,9 @@ Relia is designed for **DevOps engineers and SREs**. It lives in the terminal, w
 
 ## 🤝 Contributing
 
-We love contributions! Please read our [CONTRIBUTING.md](https://github.com/davidahmann/relia_oss/blob/main/CONTRIBUTING.md) to get started.
+We love contributions! Please read our [**Contributing Guide**](../CONTRIBUTING.md) to get started.
+
+Want to add a new AWS resource? Check out our [**Developer Guide: Adding Resources**](how_to_add_resources.md).
 
 <script type="application/ld+json">
 {

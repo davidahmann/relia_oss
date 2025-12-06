@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.2.4 (2025-12-06) "Offline Mode Fix"
+## v1.2.5 (2025-12-06) "Community Upgrades"
+**Documentation**
+*   **Contributing Guide**: Added `CONTRIBUTING.md` to the root for new developers.
+*   **Extension Guide**: Added `docs/how_to_add_resources.md` explaining how to add new resources to Relia's logic.
+
+---
+
 **Bug Fixes**
 *   **Packaging**: Fixed an issue where `bundled_pricing.db` was excluded from the PyPI package, causing Offline Mode to fail in some environments.
 
