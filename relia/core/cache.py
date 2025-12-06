@@ -78,3 +78,23 @@ class PricingCache:
                 (cache_key, json.dumps(data), time.time()),
             )
             conn.commit()
+
+    def clear(self):
+        """Clear the entire cache."""
+        if self.db_path.exists():
+            try:
+                self.db_path.unlink()
+            except Exception as e:
+                # On Windows or if locked, this might fail
+                raise OSError(f"Failed to delete cache file: {e}")
+
+    def get_info(self) -> Dict[str, Any]:
+        """Return cache status."""
+        if not self.db_path.exists():
+            return {"exists": False, "path": str(self.db_path), "size_bytes": 0}
+
+        return {
+            "exists": True,
+            "path": str(self.db_path),
+            "size_bytes": self.db_path.stat().st_size,
+        }

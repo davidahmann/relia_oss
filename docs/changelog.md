@@ -1,6 +1,21 @@
 # Changelog
 
-## v1.1.3 (2025-12-06) "Pipeline Fix"
+## v1.1.4 (2025-12-06) "Final Polish"
+**Security Hardening**
+*   **Docker Integration**: Pinned Python base image to specific SHA256 digest for immutable builds.
+*   **CLI Security**: Added strict path traversal checks (`Path.resolve().is_relative_to()`) for report outputs.
+*   **Dependencies**: Added `pip-audit` to dev dependencies.
+
+**Developer Experience**
+*   **Pre-Commit**: Added `detect-secrets`, `commitizen`, and `poetry-check` hooks.
+
+**CLI Features**
+*   **Cache Management**: Added new `relia cache` command group.
+    *   `relia cache status`: View pricing cache size and location.
+    *   `relia cache clear`: Safely delete the local pricing database.
+
+---
+
 **Fix: CI Test Alignment**
 *   Updated `tests/test_lambda_pricing.py` to correctly partial-mock the new API-driven pricing logic introduced in v1.1.2.
 

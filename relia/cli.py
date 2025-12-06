@@ -1,12 +1,16 @@
 import typer
 from relia.utils.output import print_estimate, print_diff, generate_markdown_report
 from relia.core.engine import ReliaEngine
+from pathlib import Path
 
 app = typer.Typer(
     name="relia",
     help="Relia: Cloud cost prevention and optimization.",
     add_completion=False,
 )
+
+cache_app = typer.Typer(help="Manage local pricing cache.")
+app.add_typer(cache_app, name="cache")
 
 
 @app.callback()
@@ -16,6 +20,17 @@ def main(
     from relia.utils.logger import setup_logger
 
     setup_logger(verbose)
+
+
+def _safe_path_write(path_str: str) -> Path:
+    """Ensure path is within CWD to prevent traversal attacks."""
+    target = Path(path_str).resolve()
+    cwd = Path.cwd().resolve()
+    if not target.is_relative_to(cwd):
+        raise typer.BadParameter(
+            f"Path traversal detected: {path_str} is outside working directory."
+        )
+    return target
 
 
 @app.command()
@@ -73,7 +88,8 @@ def estimate(
 
         html = generate_html_report(resources, costs)
         if out:
-            with open(out, "w") as f:
+            safe_out = _safe_path_write(out)
+            with open(safe_out, "w") as f:
                 f.write(html)
             typer.echo(f"✅ Report saved to {out}")
         else:
@@ -133,7 +149,9 @@ def check(
             md += "\n## 🚨 Policy Violations\n"
             for v in policy_violations:
                 md += f"- {v}\n"
-        with open(markdown_report, "w") as f:
+
+        safe_md_path = _safe_path_write(markdown_report)
+        with open(safe_md_path, "w") as f:
             f.write(md)
 
     exit_code = 0
@@ -213,6 +231,39 @@ def version():
     from relia import __version__
 
     print(f"Relia v{__version__}")
+
+    print(f"Relia v{__version__}")
+
+
+@cache_app.command("clear")
+def cache_clear():
+    """Clear the local pricing cache."""
+    from relia.core.cache import PricingCache
+
+    cache = PricingCache()
+    try:
+        cache.clear()
+        typer.echo("✅ Cache cleared successfully.")
+    except Exception as e:
+        typer.echo(f"🚨 Failed to clear cache: {e}")
+        raise typer.Exit(code=1)
+
+
+@cache_app.command("status")
+def cache_status():
+    """Show cache location and size."""
+    from relia.core.cache import PricingCache
+
+    cache = PricingCache()
+    info = cache.get_info()
+
+    typer.echo(f"📁 Path: {info['path']}")
+    if info["exists"]:
+        size_kb = info["size_bytes"] / 1024
+        typer.echo(f"📦 Size: {size_kb:.2f} KB")
+        typer.echo("✅ Cache exists and is active.")
+    else:
+        typer.echo("⚠️  Cache file does not exist (will be created on first API call).")
 
 
 if __name__ == "__main__":
