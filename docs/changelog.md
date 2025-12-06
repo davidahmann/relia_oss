@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.1.4 (2025-12-06) "Final Polish"
+## v1.1.5 (2025-12-06) "Path Security Fix"
+**Fixes**
+*   **Test Suite**: Updated `tests/test_check.py` to use `isolated_filesystem` to comply with new path traversal security checks introduced in v1.1.4.
+
+---
+
 **Security Hardening**
 *   **Docker Integration**: Pinned Python base image to specific SHA256 digest for immutable builds.
 *   **CLI Security**: Added strict path traversal checks (`Path.resolve().is_relative_to()`) for report outputs.

@@ -3,6 +3,7 @@ from typer.testing import CliRunner
 from relia.cli import app
 from unittest.mock import patch
 from relia.models import ReliaResource
+from pathlib import Path
 
 runner = CliRunner()
 
@@ -43,14 +44,15 @@ def test_check_exceeds_budget(mock_engine):
     assert "Limit: $50.00" in result.stdout
 
 
-def test_check_markdown_report(mock_engine, tmp_path):
-    report_file = tmp_path / "report.md"
-    result = runner.invoke(
-        app, ["check", ".", "--budget", "100", "--markdown-file", str(report_file)]
-    )
+def test_check_markdown_report(mock_engine):
+    with runner.isolated_filesystem():
+        result = runner.invoke(
+            app, ["check", ".", "--budget", "100", "--markdown-file", "report.md"]
+        )
 
-    assert result.exit_code == 0
-    assert report_file.exists()
-    content = report_file.read_text()
-    assert "# ✅ Relia Cost Report" in content
-    assert "Total Estimated Cost**: `$60.00/mo`" in content
+        assert result.exit_code == 0
+        report_file = Path("report.md")
+        assert report_file.exists()
+        content = report_file.read_text()
+        assert "# ✅ Relia Cost Report" in content
+        assert "Total Estimated Cost**: `$60.00/mo`" in content
