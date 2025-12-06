@@ -1,6 +1,7 @@
 import yaml  # type: ignore
 from pathlib import Path
 from relia.models import ReliaConfig
+from relia.utils.logger import logger
 
 
 class ConfigLoader:
@@ -21,5 +22,5 @@ class ConfigLoader:
                 budget=data.get("budget", 0.0), rules=data.get("rules", {})
             )
         except Exception as e:
-            print(f"⚠️  Error loading config: {e}")
+            logger.warning(f"⚠️  Error loading config: {e}")
             return ReliaConfig()

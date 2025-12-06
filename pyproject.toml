@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "relia_oss"
-version = "0.3.0"
+version = "1.0.0"
 description = "Cloud cost prevention and optimization tool."
 authors = ["Relia Team"]
 readme = "README.md"
@@ -33,11 +33,17 @@ pytest = "^8.0.0"
 ruff = "^0.1.0"
 mypy = "^1.0.0"
 pre-commit = "^3.5.0"
+bandit = "^1.7.5"
 pytest-cov = "^7.0.0"
 
 [tool.pytest.ini_options]
-addopts = "--cov=relia --cov-fail-under=70"
+addopts = "--cov=relia --cov-fail-under=85"
 testpaths = ["tests"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+targets = ["relia"]
+skips = ["B301"] # Skip pickle warning if present (or others)
 
 [build-system]
 requires = ["poetry-core"]

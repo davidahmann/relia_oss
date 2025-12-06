@@ -1,6 +1,7 @@
 import yaml  # type: ignore
 from pathlib import Path
 from typing import Dict, Any
+from relia.utils.logger import logger
 
 
 class UsageLoader:
@@ -22,7 +23,7 @@ class UsageLoader:
                 self.usage_data = data.get("usage", {})
                 return self.usage_data
         except Exception as e:
-            print(f"Warning: Failed to load usage file {self.path}: {e}")
+            logger.warning(f"Warning: Failed to load usage file {self.path}: {e}")
             return {}
 
     def apply_usage(

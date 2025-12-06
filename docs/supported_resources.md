@@ -51,7 +51,7 @@ usage:
 ---
 
 ## ⚠️ Un-Estimated Costs
-The following costs are **NOT** currently estimated by Relia (v0.3.0):
+The following costs are **NOT** currently estimated by Relia (v1.0.0):
 
 *   **Data Transfer (Bandwidth)**: Egress/Ingress fees.
 *   **Spot Instances**: All instances are priced as On-Demand.

@@ -16,20 +16,26 @@ Relia is available as a standard Python package.
 ```bash
 pip install relia
 ```
-*Verify installation:*
-```bash
-relia --version
-```
 
 ### Option B: Run via Docker
-If you prefer not to manage Python dependencies, use the official Docker image.
 ```bash
 docker run --rm -v $(pwd):/app relia-io/relia estimate .
 ```
 
 ---
 
-## 2. Basic Usage: Estimating Costs
+## 2. Quick Setup (New!)
+To get started quickly with budget policies and usage overlays, run:
+```bash
+relia init
+```
+This creates:
+*   `.relia.yaml`: For budgets and per-resource cost rules.
+*   `.relia.usage.yaml`: For usage assumptions (e.g. Lambda requests, S3 size).
+
+---
+
+## 3. Basic Usage: Estimating Costs
 
 Navigate to the root of your Terraform project (where your `main.tf` lives).
 
@@ -83,7 +89,7 @@ relia estimate . --diff
 
 ---
 
-## 3. Advanced Usage
+## 4. Advanced Usage
 
 ### Handling Complex Variables & Modules
 For complex projects using variables, locals, or modules, Relia supports Terraform Plan JSON output.
@@ -112,7 +118,7 @@ Relia will automatically load this file and apply the usage data (e.g., 500GB of
 
 ---
 
-## 4. Governance
+## 5. Governance
 
 ### Pre-Commit Hook (Recommended)
 The best way to save money is to prevent expensive code from ever being committed. Add this to your `.pre-commit-config.yaml`:
@@ -120,7 +126,7 @@ The best way to save money is to prevent expensive code from ever being committe
 ```yaml
 repos:
   - repo: https://github.com/davidahmann/relia_oss
-    rev: v0.3.0
+    rev: v1.0.0
     hooks:
       - id: relia-estimate  # Shows you the cost
       - id: relia-check     # Blocks you if policies fail
@@ -149,7 +155,7 @@ relia check .
 
 ---
 
-## 5. CI/CD Integration (GitHub Actions)
+## 6. CI/CD Integration (GitHub Actions)
 
 To prevent expensive merges, add Relia to your Pull Request workflow.
 

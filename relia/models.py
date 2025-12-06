@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Dict, Any
 
 
@@ -9,9 +9,10 @@ class ReliaResource(BaseModel):
     attributes: Dict[str, Any] = Field(default_factory=dict)
     file_path: str = Field(..., description="Source file path")
 
-    def __init__(self, **data):
-        super().__init__(**data)
+    @model_validator(mode="after")
+    def compute_id(self) -> "ReliaResource":
         self.id = f"{self.resource_type}.{self.resource_name}"
+        return self
 
 
 class ReliaConfig(BaseModel):

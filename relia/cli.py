@@ -163,8 +163,8 @@ def init():
     if not config_path.exists():
         config_content = """# Relia Configuration
 budget: 50.0 # Monthly budget in USD
-policy:
-  max_resource_cost: 20.0
+rules:
+  aws_instance: 20.0 # Max price per instance
 """
         with open(config_path, "w") as f:
             f.write(config_content)

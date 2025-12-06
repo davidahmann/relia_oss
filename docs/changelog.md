@@ -1,6 +1,27 @@
 # Changelog
 
-## v0.3.0 (2025-12-05) "Pragmatic Improvements"
+## v1.0.0 (2025-12-06)
+**Major Release: Production Ready**
+
+### ✨ Features
+- **Region Expansion**: Added support for 10+ new AWS regions including `us-east-2`, `eu-central-1`, `ap-southeast-1`.
+- **Relia Init**: New command to generate `.relia.yaml` and usage overlays instantly.
+- **Path Security**: Enhanced security with path resolution and traversal checks.
+- **Improved Parsing**: Robust handling of single files and Terraform variables.
+
+### 🛡️ Security
+- **Docker**: Non-root user `relia` and pinned SHA digest.
+- **Dependencies**: Added `bandit` security scanning.
+- **CI/CD**: Strict linting and type checking enforced.
+
+### 🐛 Fixes
+- Fixed configuration key mismatch (`policy` -> `rules`).
+- Fixed crashes on malformed variables (`_safe_int`).
+- Fixed silent exception swallowing in parser.
+
+---
+
+## v0.3.0 (2025-12-06) "Pragmatic Improvements"
 *   **Feature**: **NAT Gateway**: Added support for hourly cost and data transfer warnings (Bill Shock prevention).
 *   **Feature**: **Lambda**: Added support for usage-based pricing (Duration/Requests).
 *   **Feature**: **ALB/ELB**: Added support for Load Balancer hourly costs.

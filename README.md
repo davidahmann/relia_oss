@@ -128,13 +128,27 @@ poetry add relia
 
 Navigate to your Terraform project and run:
 
-```bash
-# Estimate cost
-relia estimate ./infrastructure
+1. **Initialize Config** (Optional):
+   ```bash
+   relia init
+   # Creates .relia.yaml (budget/rules) & .relia.usage.yaml (usage overlay)
+   ```
 
-# Check against budget
-relia check ./infrastructure --budget 1000
-```
+2. **Estimate Cost**:
+   ```bash
+   relia estimate .
+   ```
+
+3. **Check Budget**:
+   ```bash
+   relia check . --budget 1000
+
+   # Or using config rules:
+   relia check .
+
+   # Simulate check (exit 0 even if failure):
+   relia check . --dry-run
+   ```
 
 ### 3. Run with Docker
 
@@ -178,7 +192,7 @@ Prevent bad commits locally by adding Relia to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/davidahmann/relia_oss
-    rev: v0.3.0
+    rev: v1.0.0
     hooks:
       - id: relia-estimate # Prints cost table on every commit
       - id: relia-check    # Blocks commit if budget exceeded
@@ -222,7 +236,8 @@ jobs:
 
 - [x] **Phase 1 (MVP)**: CLI, Terraform Support, AWS Pricing.
 - [x] **Phase 2**: GitHub Action, Budget Policies via `.relia.yml`.
-- [ ] **Phase 3**: Utilization Scanning ("Fix" Mode).
+- [x] **Phase 3 (v0.3.0)**: Lambda/NAT/LB Support, Usage Overlays.
+- [ ] **Phase 4**: Utilization Scanning ("Fix" Mode).
 
 ---
 

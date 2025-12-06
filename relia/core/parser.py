@@ -9,12 +9,25 @@ class TerraformParser:
     """Parses Terraform files into ReliaResource objects."""
 
     def parse_directory(self, directory: str) -> List[ReliaResource]:
-        """Parses all .tf files in a directory recursively."""
+        """Parses all .tf files in a directory recursively. Resolves path for security."""
         resources: List[ReliaResource] = []
-        path = Path(directory)
+        path = Path(directory).resolve()
 
         if not path.exists():
+            logger.warning(f"Path does not exist: {path}")
             return []
+
+        # Support single file parsing
+        if path.is_file():
+            if path.suffix == ".tf":
+                return self.parse_file(str(path))
+            elif path.suffix == ".json":
+                return self.parse_plan_json(str(path))
+            else:
+                logger.warning(
+                    f"Unsupported file type: {path.name} (Expected .tf or .json)"
+                )
+                return []
 
         for file_path in path.rglob("*.tf"):
             resources.extend(self.parse_file(str(file_path)))
@@ -134,7 +147,8 @@ class TerraformParser:
                         ):
                             # Found explicit string region
                             return region
-            except Exception:
+            except Exception as e:
+                logger.debug(f"Failed to scan {file_path} for region: {e}")
                 continue
 
         return None
