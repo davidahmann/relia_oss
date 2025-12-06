@@ -27,3 +27,9 @@ poetry.lock
 
 # Relia
 .relia/
+
+# Coverage
+.coverage
+.pytest_cache/
+htmlcov/
+coverage.xml
