@@ -1,6 +1,18 @@
 # Changelog
 
-## v1.1.0 (2025-12-06) "The PLG Release"
+## v1.1.1 (2025-12-06) "PLG Polish"
+**Enhancement: Premium Reports & Expanded Advisor**
+
+### ✨ Features
+- **Premium HTML Reports**: Completely redesigned HTML output with:
+  - **Topology Graph**: Embedded Mermaid.js visualization.
+  - **Interactive Tables**: Client-side sorting and filtering.
+  - **Stats Cards**: Revenue/Cost summary cards.
+  - **Modern UI**: Inter font, polished CSS.
+- **Enhanced Advisor**: Added support for **RDS Storage** optimization (gp2 -> gp3).
+
+---
+
 **Major Features: Active Advisor & Reports**
 
 ### ✨ Features

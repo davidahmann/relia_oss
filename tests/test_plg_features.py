@@ -43,11 +43,12 @@ def test_html_report_generation():
 
     html = generate_html_report(resources, costs)
 
-    assert "<html>" in html
+    assert "<!DOCTYPE html>" in html
     assert "Relia Cost Report" in html
-    assert "$10.00/mo" in html
+    assert "$10.00" in html
     assert "Upgrade to gp3" in html  # Tip is present
     assert 'class="tip"' in html
+    assert "mermaid" in html  # Check mermaid is present
 
 
 def test_cli_html_output():
