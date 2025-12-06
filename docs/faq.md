@@ -94,3 +94,11 @@ Relia fills a similar niche but focuses on **simplicity and privacy**.
 
 ### How is this different from CloudHealth/Vantage?
 Those are **Reporting Tools** (Post-Deployment). Relia is a **Prevention Tool** (Pre-Deployment). You use Relia to *prevent* the spike that Vantage reports on 30 days later.
+
+## People Also Ask
+
+### What is the best open source Terraform cost tool?
+Relia is a free, privacy-first option. It estimates AWS costs from `.tf` files without sending data to any SaaS. It is ideal for teams who want control and simplicity.
+
+### How do I calculate EC2 cost from Terraform?
+Run `relia estimate .` in your Terraform directory. Relia parses `instance_type` and fetches the exact hourly rate from AWS to give you a monthly projection.

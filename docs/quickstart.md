@@ -4,7 +4,9 @@ description: "Step-by-step guide to install Relia and estimate AWS infrastructur
 keywords: terraform cost estimate, aws pricing cli, infrastructure cost calculator
 ---
 
-# Quickstart Guide: Setting up Relia
+# Quickstart Guide
+
+> **TL;DR:** Install with `pip install relia`, then run `relia estimate .` in your Terraform directory to see monthly AWS costs. Use `relia check --budget 500` to block PRs over budget.
 
 This guide covers how to install Relia, run your first cost estimate, and integrate it into your CI/CD pipeline.
 
