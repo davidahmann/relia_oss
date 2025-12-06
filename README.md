@@ -9,7 +9,7 @@ Prevent cloud waste before it ships to production.
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[Features](#-features) • [How It Works](#-how-it-works) • [Quick Start](#-quick-start) • [Roadmap](#-roadmap)
+[Features](#-features) • [How It Works](#-how-it-works) • [Quick Start](#-quick-start) • [Read the Docs](https://davidahmann.github.io/relia_oss/)
 
 </div>
 
