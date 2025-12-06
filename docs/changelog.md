@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.1 (2025-12-06)
+*   **Fix**: Corrected PyPI release to include all latest type stubs and fixes.
+
 ## v1.0.0 (2025-12-06)
 **Major Release: Production Ready**
 

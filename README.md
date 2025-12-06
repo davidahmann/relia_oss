@@ -192,7 +192,7 @@ Prevent bad commits locally by adding Relia to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/davidahmann/relia_oss
-    rev: v1.0.0
+    rev: v1.0.1
     hooks:
       - id: relia-estimate # Prints cost table on every commit
       - id: relia-check    # Blocks commit if budget exceeded
