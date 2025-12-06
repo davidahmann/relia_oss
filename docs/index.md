@@ -76,6 +76,7 @@ Relia is designed for **DevOps engineers and SREs**. It lives in the terminal, w
 - **[FAQ](faq.md):** Answers to common questions about accuracy, Azure/GCP support, and comparisons.
 - **[Changelog](changelog.md):** Version history and release notes.
 - **[Why We Built Relia](why-we-built-relia.md):** The story behind ending "Bill Shock".
+- **[Developer Guide](how_to_add_resources.md):** How to add new AWS resources to Relia.
 
 ---
 
