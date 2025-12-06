@@ -30,9 +30,20 @@ usage:
         [{"Type": "Serverless"}],
     )
 
+    mock_matcher.get_lambda_request_filters.return_value = [{"Type": "Request"}]
+
     mock_pricing = MagicMock()
-    # Price per GB-Second (x86 standard)
-    mock_pricing.get_product_price.return_value = 0.0000166667
+
+    def price_side_effect(service, filters):
+        # If filters match duration (from get_pricing_filters mock)
+        if filters == [{"Type": "Serverless"}]:
+            return 0.0000166667
+        # If filters match requests
+        if filters == [{"Type": "Request"}]:
+            return 0.0000002  # $0.20 per million
+        return 0.0
+
+    mock_pricing.get_product_price.side_effect = price_side_effect
 
     with patch("builtins.open", mock_open(read_data=usage_yaml)):
         with patch("pathlib.Path.exists", return_value=True):

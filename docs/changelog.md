@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.1.2 (2025-12-06) "API Purity"
+## v1.1.3 (2025-12-06) "Pipeline Fix"
+**Fix: CI Test Alignment**
+*   Updated `tests/test_lambda_pricing.py` to correctly partial-mock the new API-driven pricing logic introduced in v1.1.2.
+
+---
+
 **Fix: Lambda Pricing Accuracy**
 *   **API-Driven Lambda Requests**: Removed hardcoded $0.20/million constant for Lambda requests. Now fetches the exact real-time price from AWS API.
 
