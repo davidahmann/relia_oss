@@ -2,6 +2,7 @@ import typer
 from relia.utils.output import print_estimate, print_diff, generate_markdown_report
 from relia.core.engine import ReliaEngine
 from pathlib import Path
+from relia.utils.logger import logger
 
 app = typer.Typer(
     name="relia",
@@ -88,10 +89,15 @@ def estimate(
 
         html = generate_html_report(resources, costs)
         if out:
-            safe_out = _safe_path_write(out)
-            with open(safe_out, "w") as f:
-                f.write(html)
-            typer.echo(f"✅ Report saved to {out}")
+            try:
+                safe_out = _safe_path_write(out)
+                with open(safe_out, "w") as f:
+                    f.write(html)
+                typer.echo(f"✅ Report saved to {out}")
+            except (IOError, OSError) as e:
+                logger.error(f"Failed to write HTML report: {e}")
+                typer.secho(f"Error writing file: {e}", fg=typer.colors.RED)
+                raise typer.Exit(code=1)
         else:
             typer.echo(html)
         return
@@ -150,9 +156,14 @@ def check(
             for v in policy_violations:
                 md += f"- {v}\n"
 
-        safe_md_path = _safe_path_write(markdown_report)
-        with open(safe_md_path, "w") as f:
-            f.write(md)
+        try:
+            safe_md_path = _safe_path_write(markdown_report)
+            with open(safe_md_path, "w") as f:
+                f.write(md)
+        except (IOError, OSError) as e:
+            logger.error(f"Failed to write Markdown report: {e}")
+            typer.secho(f"Error writing file: {e}", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
 
     exit_code = 0
 
@@ -229,8 +240,6 @@ def version():
     Show version.
     """
     from relia import __version__
-
-    print(f"Relia v{__version__}")
 
     print(f"Relia v{__version__}")
 

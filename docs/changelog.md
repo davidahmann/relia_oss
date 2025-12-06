@@ -1,6 +1,13 @@
 # Changelog
 
-## v1.1.5 (2025-12-06) "Path Security Fix"
+## v1.1.6 (2025-12-06) "Quality Fixes"
+**Improvements**
+*   **Report Accuracy**: HTML Reports now correctly display the current package version instead of a hardcoded value.
+*   **Load Balancer Pricing**: Updated `_match_lb` to strictly filter for `group="Load Balancer"` to ensure hourly pricing is returned (avoiding LCU confusion).
+*   **CLI Robustness**: Added graceful error handling for file write operations (`--out`, `--markdown-file`) to prevent stack traces on permission errors.
+
+---
+
 **Fixes**
 *   **Test Suite**: Updated `tests/test_check.py` to use `isolated_filesystem` to comply with new path traversal security checks introduced in v1.1.4.
 

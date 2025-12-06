@@ -241,10 +241,7 @@ class ResourceMatcher:
             # Actually, let's filter by location too.
             {"Type": "TERM_MATCH", "Field": "location", "Value": self._get_location()},
             {"Type": "TERM_MATCH", "Field": "productFamily", "Value": product_family},
-            # To isolate hourly: group="LCU" vs group="Hourly"?
-            # Usually strict TERM_MATCH on productFamily gives multiple terms (Usage vs Hourly).
-            # We assume PricingClient picks the first one?
-            # If so, we might get LCU usage price ($0.008) instead of Hourly ($0.0225).
-            # We can try to force group="Hourly" or usageType check if possible.
-            # But group filter is safer if available.
+            # Isolate hourly charages vs LCU (Data Processing)
+            # "Load Balancer" group usually targets the fixed hourly cost for ALB/NLB
+            {"Type": "TERM_MATCH", "Field": "group", "Value": "Load Balancer"},
         ]
