@@ -1,6 +1,14 @@
 # Changelog
 
-## v1.1.8 (2025-12-06) "Coverage Expansion"
+## v1.1.9 (2025-12-06) "Advisor Intelligence"
+**New Features**
+*   **Active Advisor (Lambda)**: Now proactively suggests switching `x86_64` functions to `arm64` (Graviton2) for ~20% cost savings.
+*   **Active Advisor (RDS)**:
+    *   Recommends upgrading `gp2` storage to `gp3` for consistent performance and lower cost.
+    *   Suggests **Aurora Serverless v2** for provisioned Aurora clusters to handle variable workloads efficiently.
+
+---
+
 **Tests**
 *   **HTML Reporting**: Added dedicated tests (`tests/test_output_html.py`) to verify HTML report structure, version injection, and budget alerts using `BeautifulSoup` assertions logic (simulated).
 *   **Regression Tests**: Expanded regression suite coverage.

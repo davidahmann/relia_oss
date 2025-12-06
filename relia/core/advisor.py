@@ -32,11 +32,36 @@ class ReliaAdvisor:
                         f"💡 Consider {instance_type.replace('t2.', 't3.')}: Newer generation, often cheaper."
                     )
 
-                # Check for Graviton opportunity? (Simple heuristic)
                 if instance_type and instance_type.startswith(("m5.", "c5.", "r5.")):
                     g_type = instance_type.replace(".", "g.")
                     tips.append(
                         f"💡 Consider Graviton ({g_type}): Up to 20% savings for compatible workloads."
+                    )
+
+            # 3. RDS Optimization
+            if resource.resource_type == "aws_db_instance":
+                # Check for gp2 storage
+                storage_type = resource.attributes.get("storage_type", "gp2")
+                if storage_type == "gp2":
+                    tips.append(
+                        "💡 Upgrade storage to gp3: Consistent IOPS and lower price."
+                    )
+
+                # Check for Aurora Serverless opportunity (Generic advice)
+                engine = resource.attributes.get("engine", "")
+                if "aurora" in engine and "serverless" not in engine:
+                    tips.append(
+                        "💡 For variable workloads, consider Aurora Serverless v2 to auto-scale capacity."
+                    )
+
+            # 4. Lambda Optimization
+            if resource.resource_type == "aws_lambda_function":
+                archs = resource.attributes.get("architectures", [])
+                # Terraform 'architectures' is a list, e.g. ["x86_64"] or ["arm64"]
+                # If missing or explicitly x86, suggest ARM
+                if not archs or "arm64" not in archs:
+                    tips.append(
+                        "💡 Switch to ARM64 (Graviton2): 20% cheaper per ms and often faster."
                     )
 
             if tips:
