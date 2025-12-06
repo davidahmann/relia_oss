@@ -3,6 +3,7 @@ title: "Relia FAQ: Terraform Cost Accuracy, Offline Mode & Comparisons"
 description: "Answers to common questions about Relia. Learn about pricing accuracy, offline mode, and how it compares to other FinOps tools."
 keywords: relia faq, terraform cost accuracy, offline cloud cost
 ---
+<link rel="canonical" href="https://davidahmann.github.io/relia_oss/faq/" />
 
 # Frequently Asked Questions (FAQ)
 
@@ -102,3 +103,9 @@ Relia is a free, privacy-first option. It estimates AWS costs from `.tf` files w
 
 ### How do I calculate EC2 cost from Terraform?
 Run `relia estimate .` in your Terraform directory. Relia parses `instance_type` and fetches the exact hourly rate from AWS to give you a monthly projection.
+
+---
+## Related Documentation
+- [Quickstart Guide](quickstart.md) - Install and run your first estimate
+- [Supported Resources](supported_resources.md) - EC2, RDS, Lambda pricing
+- [Comparisons](comparisons.md) - Relia vs Infracost vs CloudHealth

@@ -3,6 +3,7 @@ title: "How to Estimate Terraform Costs with Relia | Quickstart Guide"
 description: "Step-by-step guide to install Relia and estimate AWS infrastructure costs from Terraform. Works with EC2, RDS, Lambda, and more."
 keywords: terraform cost estimate, aws pricing cli, infrastructure cost calculator
 ---
+<link rel="canonical" href="https://davidahmann.github.io/relia_oss/quickstart/" />
 
 # Quickstart Guide
 
@@ -243,3 +244,9 @@ jobs:
   }]
 }
 </script>
+
+---
+## Related Documentation
+- [Supported Resources](supported_resources.md) - EC2, RDS, Lambda pricing
+- [FAQ](faq.md) - Common questions and troubleshooting
+- [Architecture](architecture.md) - Learn how the pricing engine works

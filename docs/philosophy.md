@@ -26,3 +26,9 @@ Your infrastructure logic is your intellectual property. You shouldn't have to u
 *   **Local First:** Relia runs on *your* machine.
 *   **No Secrets:** We analyze resource attributes (type, region), not sensitive data (passwords, keys).
 *   **Open Source:** You can audit exactly how we calculate every cent.
+
+---
+## Related Documentation
+- [Architecture](architecture.md) - See how we implement this philosophy
+- [Why We Built Relia](why-we-built-relia.md) - Origin story
+- [Comparisons](comparisons.md) - vs Post-Deployment tools

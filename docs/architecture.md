@@ -58,3 +58,9 @@ flowchart LR
   "keywords": "terraform parser, aws pricing api, cost estimation architecture"
 }
 </script>
+
+---
+## Related Documentation
+- [Quickstart Guide](quickstart.md) - Install and run your first estimate
+- [Philosophy](philosophy.md) - Our "Prevention > Optimization" approach
+- [FAQ](faq.md) - Common questions and troubleshooting

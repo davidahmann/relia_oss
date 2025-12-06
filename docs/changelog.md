@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.2.2 (2025-12-06) "Content Strategy"
+## v1.2.3 (2025-12-06) "SEO Completeness"
+**Linking & Canonicalization**
+*   **Canonicals**: Added `<link rel="canonical">` tags to key documentation pages to prevent duplicate content issues.
+*   **Internal Linking**: Added "Related Documentation" footers to all pages to improve crawlability and user navigation flow.
+
+---
+
 **Content & AEO**
 *   **Comparisons**: Added `docs/comparisons.md` detailing the differences between Relia, Infracost, and CloudHealth for evaluators.
 *   **PAA/FAQ**: Expanded FAQ with "People Also Ask" sections to target natural language queries (e.g., "How do I calculate EC2 cost from Terraform?").

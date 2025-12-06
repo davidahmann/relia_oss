@@ -26,3 +26,9 @@ If a resource shows cost `-` or `$0.00`:
 2.  **Complex Filters**: Some specific configurations (e.g. BYOL, Dedicated Hosts) might miss our matcher rules.
 
 Please [open an issue](https://github.com/davidahmann/relia_oss/issues) with your `.tf` snippet!
+
+---
+## Related Documentation
+- [Quickstart Guide](quickstart.md) - Basic configuration
+- [FAQ](faq.md) - Why costs might show as $0.00
+- [GitHub Issues](https://github.com/davidahmann/relia_oss/issues) - Report a bug
