@@ -26,7 +26,7 @@ Existing tools (CloudHealth, Vantage) are **reactive**. They tell you *after* yo
 
 ## 🛡️ Solution: Shift Left
 
-**Relia** sits in your Pull Request. It parses your Terraform/Pulumi changes, estimates the monthly cost impact, and blocks the merge if you blow your budget.
+**Relia** sits in your Pull Request. It parses your Terraform changes, estimates the monthly cost impact, and blocks the merge if you blow your budget.
 
 > **Tagline**: *"Stop paying the infrastructure tax. Start shipping."*
 
