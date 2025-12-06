@@ -71,6 +71,7 @@ Relia is designed for **DevOps engineers and SREs**. It lives in the terminal, w
 - **[Supported Resources](supported_resources.md):** Full list of supported AWS services (EC2, Lambda, etc.) and Usage Overlay guide.
 - **[Architecture](architecture.md):** How the Parser, Matcher, and Pricing Engine work.
 - **[Philosophy](philosophy.md):** Why "Prevention > Optimization" is the future of FinOps.
+- **[Comparisons](comparisons.md):** Relia vs Infracost, CloudHealth, and Vantage.
 - **[Troubleshooting](troubleshooting.md):** Fixing AWS SSO errors and parsing issues.
 - **[FAQ](faq.md):** Answers to common questions about accuracy, Azure/GCP support, and comparisons.
 - **[Changelog](changelog.md):** Version history and release notes.
