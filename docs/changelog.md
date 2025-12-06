@@ -1,6 +1,16 @@
 # Changelog
 
-## v1.1.6 (2025-12-06) "Quality Fixes"
+## v1.1.7 (2025-12-06) "Pipeline Upgrade"
+**Infrastructure**
+*   **CI/CD**: Upgraded GitHub Actions to latest versions (checkout@v4, setup-python@v5).
+*   **Security**: Added `bandit` (SAST) and `pip-audit` (Dependency Check) to the standard test workflow.
+*   **Release Safety**: Release workflow now runs full test suite before publishing to PyPI.
+
+**Documentation**
+*   **Quickstart**: Updated documentation for Active Advisor, Load Balancer rules, and HTML report generation.
+
+---
+
 **Improvements**
 *   **Report Accuracy**: HTML Reports now correctly display the current package version instead of a hardcoded value.
 *   **Load Balancer Pricing**: Updated `_match_lb` to strictly filter for `group="Load Balancer"` to ensure hourly pricing is returned (avoiding LCU confusion).

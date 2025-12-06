@@ -24,3 +24,7 @@ jobs:
         run: poetry run mypy .
       - name: Run tests
         run: poetry run pytest
+      - name: Security Audit (Bandit)
+        run: poetry run bandit -c pyproject.toml -r relia
+      - name: Dependency Vulnerability Check
+        run: poetry run pip-audit

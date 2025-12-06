@@ -62,9 +62,22 @@ flowchart LR
 
 ### 1. Pre-Deploy Cost Estimation
 Know exactly what a PR will cost **before** you click merge. Supports EC2, RDS, Lambda, NAT Gateways, and more.
--   **Active Advisor**: Proactively suggests cost optimizations (e.g., "Upgrade gp2 to gp3 for 20% savings").
--   **Shareable Reports**: Generate beautiful HTML dashboards with topology graphs and cost breakdowns for your team.
+-   **Active Advisor**: Proactively suggests cost optimizations.
+    *   **EBS Volumes**: Suggests upgrading `gp2` to `gp3` (up to 20% cheaper).
+    *   **EC2 Instances**: Recommends modern generations (e.g., `t2` -> `t3`) and Graviton options.
+    *   **Load Balancers**: Identifies potential savings in LCU vs Hourly usage.
 -   **Prevent Bill Shock**: Catch expensive resources in PRs before they are merged.
+
+### Shareable HTML Reports
+Generate a premium, self-contained HTML dashboard for your team or finance department. This report includes:
+*   **Infrastructure Topology Graph** (Mermaid.js)
+*   **Interactive Cost Table** (Sort & Filter)
+*   **Optimization Tips**
+
+```bash
+# Generate report.html
+relia estimate . --format html --out report.html
+```
 👉 **[See Full List of Supported Resources](docs/supported_resources.md)**
 
 Supports both standard `.tf` files and `terraform plan -json` output:
