@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Type
 
 import yaml  # type: ignore
 from pydantic import BaseModel, Field, model_validator
+from pydantic.fields import FieldInfo
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -25,13 +27,18 @@ class ReliaResource(BaseModel):
 
 
 class YamlConfigSettingsSource(PydanticBaseSettingsSource):
-    def get_field_value(self, field: Field, field_name: str) -> Tuple[Any, str, bool]:
+    def get_field_value(
+        self, field: FieldInfo, field_name: str
+    ) -> Tuple[Any, str, bool]:
         # Not used directly, we implement __call__
         return None, field_name, False
 
     def __call__(self) -> Dict[str, Any]:
-        config_path = Path(".relia.yaml")
-        if not config_path.exists():
+        path_from_env = os.environ.get("RELIA_CONFIG_PATH", ".relia.yaml")
+        config_path = Path(path_from_env)
+
+        if not config_path.exists() and path_from_env == ".relia.yaml":
+            # Fallback to .yml only if using default
             config_path = Path(".relia.yml")
 
         if not config_path.exists():

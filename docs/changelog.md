@@ -12,6 +12,9 @@
 **Breaking Changes**
 *   Internal configuration loading logic has been refactored to use `pydantic-settings`. Behavior remains backward compatible with `.relia.yaml` files.
 
+**Bug Fixes**
+*   **CI/CD**: Fixed Mypy type checking errors (`pydantic.fields.FieldInfo`) and corrected test assertion logic for 12-factor config precedence.
+
 ---
 
 **Documentation**
