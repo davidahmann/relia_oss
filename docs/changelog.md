@@ -1,6 +1,19 @@
 # Changelog
 
-## v1.2.5 (2025-12-06) "Community Upgrades"
+## v1.3.0 (2025-12-07) "Golden OSS"
+**Features (12-Factor)**
+*   **Env Var Config**: Relia now supports configuration via Environment Variables (e.g., `RELIA_BUDGET=500`), enabling cleaner CI/CD integration without checking in config files.
+
+**Developer Experience**
+*   **Makefile**: Added a root `Makefile` to standardize setup, testing, and linting (`make setup`, `make test`).
+*   **CLI UX**: Added `relia --version` flag support.
+*   **Docs**: Added explicit Prerequisites and updated Contributing guide.
+
+**Breaking Changes**
+*   Internal configuration loading logic has been refactored to use `pydantic-settings`. Behavior remains backward compatible with `.relia.yaml` files.
+
+---
+
 **Documentation**
 *   **Contributing Guide**: Added `CONTRIBUTING.md` to the root for new developers.
 *   **Extension Guide**: Added `docs/how_to_add_resources.md` explaining how to add new resources to Relia's logic.

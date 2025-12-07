@@ -22,7 +22,19 @@ Every engineering team knows the ritual:
 2.  CI/CD passes (tests pass, build succeeds).
 3.  **30 days later**: Finance asks why the AWS bill jumped by $5,000.
 
-Existing tools (CloudHealth, Vantage) are **reactive**. They tell you *after* you've wasted the money.
+Existing tools (CloudHealth, Vantage) are **reactive**. Unlike traditional cloud cost management tools (like CloudHealth or Vantage) that report on *past* spending, Relia is a **proactive guardrail**. It parses your Infrastructure-as-Code (IaC), calculates the monthly cost impact using the AWS Price List API, and enforces budget policies in your Git workflow.
+
+---
+
+## ✅ Prerequisites
+
+| Requirement | Version | Note |
+| :--- | :--- | :--- |
+| **Python** | 3.10+ | Required |
+| **Terraform** | v0.14+ | Core source code |
+| **OS** | Linux, macOS, Win | Cross-platform support |
+
+---
 
 ## 🛡️ Solution: Shift Left
 

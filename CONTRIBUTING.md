@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Relia! We are an open-source proj
 
 ## 🛠️ Development Setup
 
-Relia uses **Poetry** for dependency management and **Pre-commit** for code quality.
+Relia includes a `Makefile` to simplify development.
 
 1.  **Clone the repository:**
     ```bash
@@ -12,29 +12,25 @@ Relia uses **Poetry** for dependency management and **Pre-commit** for code qual
     cd relia_oss
     ```
 
-2.  **Install dependencies:**
+2.  **Setup Environment:**
     ```bash
-    pip install poetry
-    poetry install
+    make setup
     ```
-
-3.  **Install pre-commit hooks:**
-    ```bash
-    poetry run pre-commit install
-    ```
-    This ensures all code is linted (Ruff) and checked for secrets *before* you commit.
 
 ## 🧪 Running Tests
 
-We aim for high test coverage (>85%). Please run the full suite before submitting a PR.
+We aim for high test coverage (>85%).
 
 ```bash
-poetry run pytest
+make test
 ```
 
-To run a specific test file:
+## 🛡️ Quality & Security
+
+Before submitting a PR, please run:
 ```bash
-poetry run pytest tests/test_matcher_unit.py
+make lint           # runs ruff & mypy
+make check-security # runs bandit & pip-audit
 ```
 
 ## 📐 adding New Resources

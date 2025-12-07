@@ -14,9 +14,24 @@ cache_app = typer.Typer(help="Manage local pricing cache.")
 app.add_typer(cache_app, name="cache")
 
 
+def version_callback(value: bool):
+    if value:
+        from relia import __version__
+
+        typer.echo(f"Relia v{__version__}")
+        raise typer.Exit()
+
+
 @app.callback()
 def main(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+    version: bool = typer.Option(
+        None,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show version and exit",
+    ),
 ):
     from relia.utils.logger import setup_logger
 
