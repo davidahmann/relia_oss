@@ -4,48 +4,66 @@ Thank you for your interest in contributing to Relia! We are an open-source proj
 
 ## 🛠️ Development Setup
 
-Relia includes a `Makefile` to simplify development.
+Relia uses standard Python tooling managed by a **Makefile**.
 
-1.  **Clone the repository:**
+1.  **Fork and Clone**
     ```bash
-    git clone https://github.com/davidahmann/relia_oss.git
+    git clone https://github.com/YOUR_USERNAME/relia_oss.git
     cd relia_oss
     ```
 
-2.  **Setup Environment:**
+2.  **Setup Environment**
+    Run the setup command to install `poetry` and all dependencies:
     ```bash
     make setup
     ```
 
-## 🧪 Running Tests
+3.  **Verify Install**
+    ```bash
+    make test
+    ```
 
-We aim for high test coverage (>85%).
+## 🏗️ Project Structure
 
+*   `relia/`: Source code.
+*   `relia/core/bundled_pricing.db`: SQLite database for offline caching.
+*   `tests/`: Pytest suite.
+*   `.github/`: Workflows and Issue Templates.
+
+## 🧪 Testing & Configuration
+
+### Running Tests
+We require >85% code coverage.
 ```bash
 make test
 ```
 
-## 🛡️ Quality & Security
+### Configuration for Testing
+You can control Relia's behavior during tests or local runs using **Environment Variables**:
 
-Before submitting a PR, please run:
+*   `RELIA_BUDGET`: Override budget limit (e.g. `500`).
+*   `RELIA_CONFIG_PATH`: Point to a specific config file (default: `.relia.yaml`).
+
+### Offline vs Online
+Relia includes a `bundled_pricing.db` for offline estimates. If you change pricing logic, verify it works in offline mode (disconnect internet or unset AWS creds).
+
+## 🛡️ Quality Standards
+
+Before submitting a Pull Request, verify your code meets our standards:
+
 ```bash
-make lint           # runs ruff & mypy
-make check-security # runs bandit & pip-audit
+make lint           # Check style (ruff) and types (mypy)
+make check-security # Run security audit (bandit, pip-audit)
+make format         # Auto-format code
 ```
-
-## 📐 adding New Resources
-
-Want to add support for a new AWS resource (e.g., DynamoDB, Redshift)?
-Please read our **[Guide to Adding Resources](docs/how_to_add_resources.md)**.
 
 ## 📝 Pull Request Process
 
 1.  Create a feature branch (`git checkout -b feat/my-feature`).
-2.  Commit your changes (`git commit -m "feat: Add DynamoDB support"`).
-    *   We follow [Conventional Commits](https://www.conventionalcommits.org/).
-3.  Push to the branch and open a Pull Request.
-4.  Ensure all CI checks pass.
+2.  Commit your changes following [Conventional Commits](https://www.conventionalcommits.org/).
+3.  Push and open a Pull Request.
+4.  Fill out the **Pull Request Template** checklist.
 
 ## 🤝 Code of Conduct
 
-Please be respectful and kind. We welcome contributors of all skill levels.
+Please be respectful. We adhere to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
