@@ -21,7 +21,7 @@ Please do **NOT** open a public GitHub issue for security vulnerabilities.
 
 Instead, please report vulnerabilities by:
 1.  Using the [GitHub Security Advisory "Report a Vulnerability"](https://github.com/davidahmann/relia_oss/security/advisories/new) tab (if enabled).
-2.  Emailing us at **[INSERT SECURITY EMAIL]**.
+2.  Emailing us at **dahmann@lumyn.cc**.
 
 ### What to Include
 
