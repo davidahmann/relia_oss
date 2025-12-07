@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3.2 (2025-12-07) "Community & E2E"
+*   **Testing**: Added robust E2E test suite (`tests/test_e2e_live.py`) using subprocesses to verify binary behavior in CI.
+*   **Community**: Added GitHub Templates (`bug_report`, `feature_request`) and specific `CONTRIBUTING` guide.
+*   **Meta**: Updated contact email to `dahmann@lumyn.cc`.
+
+---
+
 ## v1.3.1 (2025-12-07) "Offline & Demo Fixes"
 *   **Data Fix**: Corrected pricing data in `bundled_pricing.db` for `t3.large` and `m5.large` instances to reflect accurate On-Demand rates (fixing a data quality issue in offline mode).
 *   **Demo**: Included E2E demo script `demo/run_demo.sh` to showcase 12-factor configuration logic.
