@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3.1 (2025-12-07) "Offline & Demo Fixes"
+*   **Data Fix**: Corrected pricing data in `bundled_pricing.db` for `t3.large` and `m5.large` instances to reflect accurate On-Demand rates (fixing a data quality issue in offline mode).
+*   **Demo**: Included E2E demo script `demo/run_demo.sh` to showcase 12-factor configuration logic.
+*   **Config**: Validated and cleaned up configuration precedence logic.
+
+---
+
 ## v1.3.0 (2025-12-07) "Golden OSS"
 **Features (12-Factor)**
 *   **Env Var Config**: Relia now supports configuration via Environment Variables (e.g., `RELIA_BUDGET=500`), enabling cleaner CI/CD integration without checking in config files.
