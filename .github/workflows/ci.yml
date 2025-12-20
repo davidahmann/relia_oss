@@ -33,10 +33,13 @@ jobs:
       - name: Coverage gate
         run: |
           total=$(go tool cover -func=coverage.out | awk '/^total:/{print $3}' | tr -d '%')
-          python - <<'PY'
+          TOTAL="$total" python - <<'PY'
+          import os
           import sys
+
+          raw = os.environ.get("TOTAL", "")
           try:
-              total = float("$total")
+              total = float(raw)
           except ValueError:
               print("coverage parsing failed")
               sys.exit(1)
