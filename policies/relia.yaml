@@ -1,0 +1,25 @@
+policy_id: relia-default
+policy_version: "2025-12-20"
+
+defaults:
+  ttl_seconds: 900
+  require_approval: false
+  deny: false
+
+rules:
+  - id: prod_terraform_requires_approval
+    match:
+      action: "terraform.apply"
+      env: "prod"
+    effect:
+      require_approval: true
+      ttl_seconds: 900
+      aws_role_arn: "arn:aws:iam::123456789012:role/relia-prod-terraform"
+      risk: "high"
+
+  - id: deny_unknown_prod_actions
+    match:
+      env: "prod"
+    effect:
+      deny: true
+      reason: "Unapproved action in prod"

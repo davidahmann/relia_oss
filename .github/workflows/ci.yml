@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Check formatting
+        run: |
+          files=$(git ls-files "*.go")
+          if [[ -z "$files" ]]; then
+            exit 0
+          fi
+          fmt_files=$(gofmt -l $files)
+          if [[ -n "$fmt_files" ]]; then
+            echo "gofmt needed:"
+            echo "$fmt_files"
+            exit 1
+          fi
+
+      - name: Test
+        run: go test ./... -coverprofile=coverage.out
+
+      - name: Coverage gate
+        run: |
+          total=$(go tool cover -func=coverage.out | awk '/^total:/{print $3}' | tr -d '%')
+          python - <<PY
+import sys
+try:
+    total = float("$total")
+except ValueError:
+    print("coverage parsing failed")
+    sys.exit(1)
+
+if total < 85.0:
+    print(f"coverage {total:.1f}% below 85%")
+    sys.exit(1)
+
+print(f"coverage {total:.1f}%")
+PY

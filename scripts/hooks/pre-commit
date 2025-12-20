@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+require_cmd() {
+  local cmd="$1"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "missing required tool: $cmd" >&2
+    return 1
+  fi
+}
+
+files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.go$' || true)
+if [[ -z "$files" ]]; then
+  exit 0
+fi
+
+require_cmd gofmt
+require_cmd go
+require_cmd golangci-lint
+require_cmd gosec
+
+gofmt -w $files
+
+git add $files
+
+go vet ./...
+golangci-lint run ./...
+gosec ./...

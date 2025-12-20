@@ -1,0 +1,26 @@
+# Binaries
+/bin/
+/build/
+/dist/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Coverage
+coverage.out
+
+# IDE
+.vscode/
+.idea/
+
+# Docs (per request)
+product/
+
+# OS
+.DS_Store

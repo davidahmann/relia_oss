@@ -1,0 +1,21 @@
+listen_addr: ":8080"
+
+db:
+  driver: sqlite
+  dsn: "file:relia.db?_journal_mode=WAL"
+
+policy_path: "./policies/relia.yaml"
+
+signing_key:
+  key_id: "relia-ed25519-2025-12"
+  private_key_path: "./keys/ed25519.key"
+  public_key_path: "./keys/ed25519.pub"
+
+slack:
+  enabled: false
+  bot_token: "${SLACK_BOT_TOKEN}"
+  signing_secret: "${SLACK_SIGNING_SECRET}"
+  approval_channel: ""
+
+aws:
+  sts_region_default: "us-east-1"
