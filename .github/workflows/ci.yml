@@ -33,17 +33,17 @@ jobs:
       - name: Coverage gate
         run: |
           total=$(go tool cover -func=coverage.out | awk '/^total:/{print $3}' | tr -d '%')
-          python - <<PY
-import sys
-try:
-    total = float("$total")
-except ValueError:
-    print("coverage parsing failed")
-    sys.exit(1)
+          python - <<'PY'
+          import sys
+          try:
+              total = float("$total")
+          except ValueError:
+              print("coverage parsing failed")
+              sys.exit(1)
 
-if total < 85.0:
-    print(f"coverage {total:.1f}% below 85%")
-    sys.exit(1)
+          if total < 85.0:
+              print(f"coverage {total:.1f}% below 85%")
+              sys.exit(1)
 
-print(f"coverage {total:.1f}%")
-PY
+          print(f"coverage {total:.1f}%")
+          PY
