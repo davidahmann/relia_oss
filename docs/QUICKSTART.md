@@ -5,6 +5,10 @@
 - Install Go 1.24+.
 - Copy `relia.yaml` and update paths or environment variables as needed.
 
+## One-path demo
+
+- `docs/DEMO.md`
+
 ## Run the gateway
 
 ```bash

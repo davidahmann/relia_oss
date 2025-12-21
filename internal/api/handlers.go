@@ -22,6 +22,10 @@ type Handler struct {
 	PublicVerify     bool
 }
 
+func (h *Handler) Healthz(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
 func (h *Handler) Authorize(w http.ResponseWriter, r *http.Request) {
 	if !h.ensureAuth(w, r) {
 		return

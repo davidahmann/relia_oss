@@ -17,6 +17,7 @@ jobs:
         run: echo "PLAN_DIGEST=sha256:deadbeef" >> $GITHUB_ENV
 
       - name: Relia authorize for prod apply
+        id: relia
         uses: ./.github/actions/relia-authorize
         with:
           relia_url: ${{ secrets.RELIA_URL }}
@@ -38,6 +39,7 @@ jobs:
             echo "got dev placeholder creds; set RELIA_AWS_MODE=real on the gateway + configure AWS OIDC trust" >&2
             exit 1
           fi
+          echo "Relia verify: ${{ secrets.RELIA_URL }}/verify/${{ steps.relia.outputs.receipt_id }}"
           aws sts get-caller-identity
 
       - name: Terraform apply (now has short-lived creds)

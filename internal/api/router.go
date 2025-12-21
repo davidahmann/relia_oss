@@ -7,6 +7,8 @@ import (
 func NewRouter(handler *Handler) http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/healthz", handler.Healthz)
+
 	mux.HandleFunc("/verify/", handler.VerifyPage)
 	mux.HandleFunc("/pack/", handler.PackPublic)
 

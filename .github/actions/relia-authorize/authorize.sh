@@ -164,6 +164,33 @@ PY
   echo "AWS_ACCESS_KEY_ID=$AKID" >> "$GITHUB_ENV"
   echo "AWS_SECRET_ACCESS_KEY=$SAK" >> "$GITHUB_ENV"
   echo "AWS_SESSION_TOKEN=$STK" >> "$GITHUB_ENV"
+
+  if [[ -n "${GITHUB_STEP_SUMMARY:-}" && -n "$RECEIPT_ID" ]]; then
+    VERIFY_JSON=$(curl -sS -H "Authorization: Bearer $JWT" "$RELIA_URL/v1/verify/$RECEIPT_ID" || true)
+    GRADE=$(echo "$VERIFY_JSON" | python - <<'PY'
+import json,sys
+try:
+  data=json.load(sys.stdin)
+except Exception:
+  print("")
+  raise SystemExit(0)
+print(data.get("grade",""))
+PY
+)
+
+    {
+      echo "### Relia Authorized"
+      echo ""
+      echo "- Receipt: \`$RECEIPT_ID\`"
+      if [[ -n "$GRADE" ]]; then
+        echo "- Grade: \`$GRADE\`"
+      fi
+      echo "- Verify (JSON): $RELIA_URL/v1/verify/$RECEIPT_ID"
+      echo "- Pack (ZIP): $RELIA_URL/v1/pack/$RECEIPT_ID"
+      echo ""
+      echo "> Tip: enable \`RELIA_PUBLIC_VERIFY=1\` on the gateway to share a human-friendly page at \`$RELIA_URL/verify/$RECEIPT_ID\`."
+    } >> "$GITHUB_STEP_SUMMARY"
+  fi
 else
   echo "Authorization failed: $VERDICT"
   exit 3

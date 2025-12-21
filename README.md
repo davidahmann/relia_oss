@@ -55,6 +55,8 @@ Then open `http://localhost:8080/verify/<receipt_id>` (and download `http://loca
 ## Docs
 
 - `docs/QUICKSTART.md`
+- `docs/DEMO.md`
+- `docs/PLG.md`
 - `docs/SLACK.md`
 - `docs/AWS_OIDC.md`
 - `docs/POLICIES.md`

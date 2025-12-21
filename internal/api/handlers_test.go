@@ -99,6 +99,18 @@ func TestOtherEndpointsRequireAuth(t *testing.T) {
 	}
 }
 
+func TestHealthz(t *testing.T) {
+	router := NewRouter(&Handler{Auth: auth.NewAuthenticatorFromEnv(), AuthorizeService: nil})
+
+	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", res.Code)
+	}
+}
+
 func TestSlackInteractionsNoAuth(t *testing.T) {
 	router := NewRouter(&Handler{Auth: auth.NewAuthenticatorFromEnv(), AuthorizeService: nil})
 
