@@ -211,7 +211,7 @@ func (s *AuthorizeService) Authorize(claims ActorContext, req AuthorizeRequest, 
 	return resp, nil
 }
 
-func (s *AuthorizeService) Approve(approvalID string, status ApprovalStatus, createdAt string) (string, error) {
+func (s *AuthorizeService) Approve(approvalID string, status string, createdAt string) (string, error) {
 	approval, ok := s.Store.GetApproval(approvalID)
 	if !ok {
 		return "", fmt.Errorf("approval not found")
@@ -219,7 +219,8 @@ func (s *AuthorizeService) Approve(approvalID string, status ApprovalStatus, cre
 	if approval.Status == ApprovalApproved || approval.Status == ApprovalDenied {
 		return approval.ReceiptID, nil
 	}
-	if status != ApprovalApproved && status != ApprovalDenied {
+	approvalStatus := ApprovalStatus(status)
+	if approvalStatus != ApprovalApproved && approvalStatus != ApprovalDenied {
 		return "", fmt.Errorf("invalid approval status")
 	}
 
@@ -229,7 +230,7 @@ func (s *AuthorizeService) Approve(approvalID string, status ApprovalStatus, cre
 	}
 
 	outcome := types.ReceiptOutcome{Status: types.OutcomeApprovalDenied}
-	if status == ApprovalApproved {
+	if approvalStatus == ApprovalApproved {
 		outcome.Status = types.OutcomeApprovalApproved
 	}
 
@@ -245,7 +246,7 @@ func (s *AuthorizeService) Approve(approvalID string, status ApprovalStatus, cre
 		Approval: &types.ReceiptApproval{
 			Required:   true,
 			ApprovalID: approvalID,
-			Status:     string(status),
+			Status:     string(approvalStatus),
 		},
 		Outcome: outcome,
 	}, s.Signer)
@@ -253,12 +254,12 @@ func (s *AuthorizeService) Approve(approvalID string, status ApprovalStatus, cre
 		return "", err
 	}
 
-	approval.Status = status
+	approval.Status = approvalStatus
 	approval.ReceiptID = approvalReceipt.ReceiptID
 	s.Store.PutApproval(approval)
 
 	idem.LatestReceiptID = approvalReceipt.ReceiptID
-	if status == ApprovalDenied {
+	if approvalStatus == ApprovalDenied {
 		idem.Status = IdemDenied
 		idem.FinalReceiptID = approvalReceipt.ReceiptID
 		s.Store.Put(idem)

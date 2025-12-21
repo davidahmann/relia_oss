@@ -175,7 +175,7 @@ func TestAuthorizeApproveFlow(t *testing.T) {
 		t.Fatalf("expected approval")
 	}
 
-	receiptID, err := svc.Approve(pending.Approval.ApprovalID, ApprovalApproved, "2025-12-20T16:35:00Z")
+	receiptID, err := svc.Approve(pending.Approval.ApprovalID, string(ApprovalApproved), "2025-12-20T16:35:00Z")
 	if err != nil {
 		t.Fatalf("approve: %v", err)
 	}
@@ -224,7 +224,7 @@ func TestAuthorizeApproveDenied(t *testing.T) {
 		t.Fatalf("expected approval")
 	}
 
-	_, err = svc.Approve(pending.Approval.ApprovalID, ApprovalDenied, "2025-12-20T16:35:00Z")
+	_, err = svc.Approve(pending.Approval.ApprovalID, string(ApprovalDenied), "2025-12-20T16:35:00Z")
 	if err != nil {
 		t.Fatalf("approve: %v", err)
 	}
@@ -244,7 +244,7 @@ func TestApproveNotFound(t *testing.T) {
 		t.Fatalf("service: %v", err)
 	}
 
-	_, err = svc.Approve("missing", ApprovalApproved, "2025-12-20T16:35:00Z")
+	_, err = svc.Approve("missing", string(ApprovalApproved), "2025-12-20T16:35:00Z")
 	if err == nil {
 		t.Fatalf("expected error for missing approval")
 	}
@@ -273,7 +273,7 @@ func TestApproveInvalidStatus(t *testing.T) {
 		t.Fatalf("expected approval")
 	}
 
-	_, err = svc.Approve(pending.Approval.ApprovalID, ApprovalStatus("bad"), "2025-12-20T16:35:00Z")
+	_, err = svc.Approve(pending.Approval.ApprovalID, "bad", "2025-12-20T16:35:00Z")
 	if err == nil {
 		t.Fatalf("expected error for invalid status")
 	}

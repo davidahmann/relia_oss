@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/davidahmann/relia/internal/auth"
+	"github.com/davidahmann/relia/internal/slack"
 )
 
 func TestAuthorizeRequiresAuth(t *testing.T) {
@@ -112,6 +113,22 @@ func TestOtherEndpointsRequireAuth(t *testing.T) {
 
 func TestSlackInteractionsNoAuth(t *testing.T) {
 	router := NewRouter(&Handler{Auth: auth.NewAuthenticatorFromEnv(), AuthorizeService: nil})
+
+	req := httptest.NewRequest(http.MethodPost, "/v1/slack/interactions", nil)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+
+	if res.Code != http.StatusNotImplemented {
+		t.Fatalf("expected 501, got %d", res.Code)
+	}
+}
+
+func TestSlackInteractionsHandlerConfigured(t *testing.T) {
+	handler := &Handler{
+		Auth:         auth.NewAuthenticatorFromEnv(),
+		SlackHandler: &slack.InteractionHandler{},
+	}
+	router := NewRouter(handler)
 
 	req := httptest.NewRequest(http.MethodPost, "/v1/slack/interactions", nil)
 	res := httptest.NewRecorder()

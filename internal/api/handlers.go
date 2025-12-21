@@ -7,11 +7,13 @@ import (
 	"time"
 
 	"github.com/davidahmann/relia/internal/auth"
+	"github.com/davidahmann/relia/internal/slack"
 )
 
 type Handler struct {
 	Auth             auth.Authenticator
 	AuthorizeService *AuthorizeService
+	SlackHandler     *slack.InteractionHandler
 }
 
 func (h *Handler) Authorize(w http.ResponseWriter, r *http.Request) {
@@ -97,7 +99,11 @@ func (h *Handler) Pack(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SlackInteractions(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusNotImplemented, map[string]string{"error": "slack interactions not implemented"})
+	if h.SlackHandler == nil {
+		writeJSON(w, http.StatusNotImplemented, map[string]string{"error": "slack handler not configured"})
+		return
+	}
+	h.SlackHandler.HandleInteractions(w, r)
 }
 
 func (h *Handler) ensureAuth(w http.ResponseWriter, r *http.Request) bool {

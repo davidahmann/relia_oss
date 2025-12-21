@@ -8,6 +8,7 @@ import (
 
 	"github.com/davidahmann/relia/internal/api"
 	"github.com/davidahmann/relia/internal/auth"
+	"github.com/davidahmann/relia/internal/slack"
 )
 
 func main() {
@@ -21,7 +22,9 @@ func main() {
 		policyPath = "policies/relia.yaml"
 	}
 
-	server := newServer(addr, policyPath)
+	signingSecret := os.Getenv("RELIA_SLACK_SIGNING_SECRET")
+
+	server := newServer(addr, policyPath, signingSecret)
 
 	log.Printf("relia-gateway listening on %s", addr)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -29,15 +32,21 @@ func main() {
 	}
 }
 
-func newServer(addr string, policyPath string) *http.Server {
+func newServer(addr string, policyPath string, signingSecret string) *http.Server {
 	authorizeService, err := api.NewAuthorizeService(policyPath)
 	if err != nil {
 		log.Fatalf("authorize service error: %v", err)
 	}
 
+	slackHandler := &slack.InteractionHandler{
+		SigningSecret: signingSecret,
+		Approver:      authorizeService,
+	}
+
 	h := &api.Handler{
 		Auth:             auth.NewAuthenticatorFromEnv(),
 		AuthorizeService: authorizeService,
+		SlackHandler:     slackHandler,
 	}
 	return &http.Server{
 		Addr:              addr,
