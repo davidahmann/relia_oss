@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/davidahmann/relia_oss/internal/aws"
 	"github.com/davidahmann/relia_oss/internal/context"
 	"github.com/davidahmann/relia_oss/internal/decision"
 	"github.com/davidahmann/relia_oss/internal/ledger"
@@ -18,14 +19,21 @@ type AuthorizeService struct {
 	PolicyPath string
 	Store      *InMemoryIdemStore
 	Signer     ledger.Signer
+	Broker     aws.CredentialBroker
 }
 
 type AuthorizeResponse struct {
-	Verdict    string `json:"verdict"`
-	ContextID  string `json:"context_id"`
-	DecisionID string `json:"decision_id"`
-	ReceiptID  string `json:"receipt_id"`
-	Approval   *struct {
+	Verdict        string `json:"verdict"`
+	ContextID      string `json:"context_id"`
+	DecisionID     string `json:"decision_id"`
+	ReceiptID      string `json:"receipt_id"`
+	AWSCredentials *struct {
+		AccessKeyID     string `json:"access_key_id"`
+		SecretAccessKey string `json:"secret_access_key"`
+		SessionToken    string `json:"session_token"`
+		ExpiresAt       string `json:"expires_at"`
+	} `json:"aws_credentials,omitempty"`
+	Approval *struct {
 		ApprovalID string `json:"approval_id"`
 		Status     string `json:"status"`
 	} `json:"approval,omitempty"`
@@ -43,6 +51,7 @@ func NewAuthorizeService(policyPath string) (*AuthorizeService, error) {
 		PolicyPath: policyPath,
 		Store:      NewInMemoryIdemStore(),
 		Signer:     devSigner{keyID: "dev", priv: priv},
+		Broker:     aws.DevBroker{},
 	}, nil
 }
 
@@ -64,9 +73,9 @@ func (s *AuthorizeService) Authorize(claims ActorContext, req AuthorizeRequest, 
 				Status     string `json:"status"`
 			}{ApprovalID: rec.ApprovalID, Status: string(ApprovalPending)}}, nil
 		case IdemApprovedReady:
-			return s.issueCredentials(rec, claims, req, createdAt, true)
+			return s.issueCredentials(rec, claims, req, createdAt, true, rec.RoleARN, rec.TTLSeconds)
 		case IdemIssuing:
-			return s.issueCredentials(rec, claims, req, createdAt, false)
+			return s.issueCredentials(rec, claims, req, createdAt, false, rec.RoleARN, rec.TTLSeconds)
 		case IdemErrored:
 			return AuthorizeResponse{Verdict: string(VerdictDeny), Error: "previous error"}, nil
 		}
@@ -167,6 +176,8 @@ func (s *AuthorizeService) Authorize(claims ActorContext, req AuthorizeRequest, 
 		ContextID:       ctxRecord.ContextID,
 		DecisionID:      decRecord.DecisionID,
 		PolicyHash:      policyMeta.PolicyHash,
+		RoleARN:         decisionResult.AWSRoleARN,
+		TTLSeconds:      decisionResult.TTLSeconds,
 	}
 
 	if action == ActionReturnPending {
@@ -194,7 +205,7 @@ func (s *AuthorizeService) Authorize(claims ActorContext, req AuthorizeRequest, 
 		resp.Verdict = string(VerdictDeny)
 	}
 	if action == ActionIssueCredentials {
-		return s.issueCredentials(rec, claims, req, createdAt, false)
+		return s.issueCredentials(rec, claims, req, createdAt, false, decisionResult.AWSRoleARN, decisionResult.TTLSeconds)
 	}
 
 	return resp, nil
@@ -264,7 +275,7 @@ func (s *AuthorizeService) GetApproval(approvalID string) (ApprovalRecord, bool)
 	return s.Store.GetApproval(approvalID)
 }
 
-func (s *AuthorizeService) issueCredentials(idem IdemRecord, claims ActorContext, req AuthorizeRequest, createdAt string, createIssuing bool) (AuthorizeResponse, error) {
+func (s *AuthorizeService) issueCredentials(idem IdemRecord, claims ActorContext, req AuthorizeRequest, createdAt string, createIssuing bool, roleARN string, ttlSeconds int) (AuthorizeResponse, error) {
 	latest := idem.LatestReceiptID
 	if createIssuing {
 		issuingReceipt, err := ledger.MakeReceipt(ledger.MakeReceiptInput{
@@ -298,6 +309,29 @@ func (s *AuthorizeService) issueCredentials(idem IdemRecord, claims ActorContext
 		latest = issuingReceipt.ReceiptID
 	}
 
+	region := ""
+	if req.AWS != nil {
+		region = req.AWS.Region
+	}
+
+	credentialGrant := &types.ReceiptCredentialGrant{
+		Provider:   "aws_sts",
+		Method:     "AssumeRoleWithWebIdentity",
+		RoleARN:    roleARN,
+		Region:     region,
+		TTLSeconds: int64(ttlSeconds),
+	}
+
+	creds, err := s.Broker.AssumeRoleWithWebIdentity(aws.AssumeRoleInput{
+		RoleARN:    roleARN,
+		Region:     region,
+		TTLSeconds: ttlSeconds,
+		Subject:    claims.Subject,
+	})
+	if err != nil {
+		return AuthorizeResponse{}, err
+	}
+
 	finalReceipt, err := ledger.MakeReceipt(ledger.MakeReceiptInput{
 		CreatedAt:           createdAt,
 		IdemKey:             idem.IdemKey,
@@ -320,8 +354,9 @@ func (s *AuthorizeService) issueCredentials(idem IdemRecord, claims ActorContext
 			Env:       req.Env,
 			Intent:    req.Intent,
 		},
-		Policy:  types.ReceiptPolicy{PolicyHash: idem.PolicyHash},
-		Outcome: types.ReceiptOutcome{Status: types.OutcomeIssuedCredentials},
+		Policy:          types.ReceiptPolicy{PolicyHash: idem.PolicyHash},
+		CredentialGrant: credentialGrant,
+		Outcome:         types.ReceiptOutcome{Status: types.OutcomeIssuedCredentials, ExpiresAt: creds.ExpiresAt.UTC().Format(time.RFC3339)},
 	}, s.Signer)
 	if err != nil {
 		return AuthorizeResponse{}, err
@@ -337,6 +372,17 @@ func (s *AuthorizeService) issueCredentials(idem IdemRecord, claims ActorContext
 		ContextID:  idem.ContextID,
 		DecisionID: idem.DecisionID,
 		ReceiptID:  finalReceipt.ReceiptID,
+		AWSCredentials: &struct {
+			AccessKeyID     string `json:"access_key_id"`
+			SecretAccessKey string `json:"secret_access_key"`
+			SessionToken    string `json:"session_token"`
+			ExpiresAt       string `json:"expires_at"`
+		}{
+			AccessKeyID:     creds.AccessKeyID,
+			SecretAccessKey: creds.SecretAccessKey,
+			SessionToken:    creds.SessionToken,
+			ExpiresAt:       creds.ExpiresAt.UTC().Format(time.RFC3339),
+		},
 	}, nil
 }
 

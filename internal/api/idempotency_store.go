@@ -11,6 +11,8 @@ type IdemRecord struct {
 	ContextID       string
 	DecisionID      string
 	PolicyHash      string
+	RoleARN         string
+	TTLSeconds      int
 }
 
 type ApprovalRecord struct {

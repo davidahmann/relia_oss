@@ -13,11 +13,16 @@ type AuthorizeRequest struct {
 	Env       string            `json:"env"`
 	Intent    map[string]any    `json:"intent,omitempty"`
 	Evidence  AuthorizeEvidence `json:"evidence,omitempty"`
+	AWS       *AuthorizeAWS     `json:"aws,omitempty"`
 }
 
 type AuthorizeEvidence struct {
 	PlanDigest string `json:"plan_digest,omitempty"`
 	DiffURL    string `json:"diff_url,omitempty"`
+}
+
+type AuthorizeAWS struct {
+	Region string `json:"region,omitempty"`
 }
 
 type ActorContext struct {

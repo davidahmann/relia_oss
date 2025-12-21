@@ -68,6 +68,9 @@ func TestAuthorizeAllow(t *testing.T) {
 	if resp.ReceiptID == "" {
 		t.Fatalf("expected receipt id")
 	}
+	if resp.AWSCredentials == nil || resp.AWSCredentials.AccessKeyID == "" {
+		t.Fatalf("expected aws credentials")
+	}
 }
 
 func TestAuthorizeIdempotentPending(t *testing.T) {
