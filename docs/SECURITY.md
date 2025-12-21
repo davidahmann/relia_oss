@@ -1,3 +1,9 @@
+---
+title: Security
+description: "Security reporting and guidelines for Relia, including vulnerability disclosure and recommended hardening."
+keywords: security policy, vulnerability disclosure, oss security, relia
+---
+
 # Security Policy
 
 ## Reporting a Vulnerability

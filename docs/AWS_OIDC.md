@@ -1,4 +1,9 @@
-#!/usr/bin/env markdown
+---
+title: AWS via GitHub OIDC (real STS)
+description: "Configure Relia to validate GitHub Actions OIDC and mint real AWS STS credentials with AssumeRoleWithWebIdentity."
+keywords: github oidc, aws sts, assume role with web identity, workload identity, zero secrets, relia
+---
+
 # AWS via GitHub OIDC (real STS)
 
 Relia can mint real AWS credentials by calling `AssumeRoleWithWebIdentity` using the GitHub Actions OIDC JWT presented to `/v1/authorize`.
@@ -24,6 +29,13 @@ aws:
 ```
 
 If `RELIA_AWS_MODE` is not `real`, Relia returns **placeholder** credentials (`DEV_*`) for local development.
+
+## Audience and claims (defaults)
+
+Relia’s GitHub Action requests an OIDC token with audience `relia`. Your AWS trust policy should constrain:
+
+- `aud` to `relia`
+- `sub` to your repo + branch/environment (recommended)
 
 ## AWS IAM setup (high level)
 

@@ -1,3 +1,9 @@
+---
+title: Testing
+description: "How to run unit, integration, smoke, E2E, and coverage checks for Relia (target: 85%+)."
+keywords: testing, coverage, unit tests, integration tests, e2e, smoke tests, go test
+---
+
 # Testing
 
 ## Unit + integration tests

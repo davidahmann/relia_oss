@@ -1,4 +1,9 @@
-#!/usr/bin/env markdown
+---
+title: PLG checklist (Relia v0.1)
+description: "A product-led growth checklist for Relia’s v0.1 wedge: generate shareable audit artifacts (receipts, verify page, packs) with fast time-to-value."
+keywords: plg, product led growth, devtool adoption, audit artifacts, receipts
+---
+
 # PLG checklist (Relia v0.1)
 
 Relia’s PLG wedge is **“produce an audit artifact people want to share”**:
@@ -38,4 +43,3 @@ For OSS, start with lightweight, opt-in telemetry or log-based metrics:
 - count authorize calls / verdicts
 - approval latency distribution
 - pack downloads
-

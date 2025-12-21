@@ -1,3 +1,9 @@
+---
+title: Quickstart (v0.1)
+description: "Run Relia locally, simulate policies and approvals, and verify/pack receipts with the CLI."
+keywords: relia quickstart, policy simulator, slack approvals, verify receipt, audit pack
+---
+
 # Relia Quickstart (v0.1)
 
 ## Local setup

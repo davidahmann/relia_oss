@@ -1,4 +1,9 @@
-#!/usr/bin/env markdown
+---
+title: Policies and templates
+description: "Relia policies match (action, env, resource) and return an effect: allow/deny/require approval plus role + TTL. Includes templates and a simulator."
+keywords: relia policy, policy templates, approval policy, authorization rules, terraform apply
+---
+
 # Policy templates
 
 Relia policies are simple YAML: they match `(action, env, resource)` and return an effect:
@@ -25,4 +30,3 @@ go run ./cmd/relia-cli policy test \
   --resource stack/prod \
   --env prod
 ```
-

@@ -1,3 +1,9 @@
+---
+title: Release process
+description: "How Relia releases are created (tags, changelog, and GitHub releases)."
+keywords: release, versioning, changelog, github releases
+---
+
 # Release Process
 
 This repository uses lightweight releases driven by Git tags.

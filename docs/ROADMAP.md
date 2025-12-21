@@ -1,3 +1,9 @@
+---
+title: Roadmap
+description: "Where Relia is headed: storage durability, integrations, and product surfaces."
+keywords: roadmap, relia roadmap, oss roadmap, future work
+---
+
 # Roadmap
 
 Relia is the **runtime enforcement** component in the broader Axiom “Inference Ledger” sequence:

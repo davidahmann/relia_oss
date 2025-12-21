@@ -1,4 +1,9 @@
-#!/usr/bin/env markdown
+---
+title: One-path demo (v0.1)
+description: "A single-path demo of Relia: authorize → Slack approval (simulated) → mint creds → verify + pack artifacts."
+keywords: relia demo, slack approvals, signed receipt, audit pack, zero secrets
+---
+
 # One-path demo (v0.1)
 
 Goal: **prod apply with zero secrets + approval + instant audit artifacts**.
@@ -94,4 +99,3 @@ Unzip the pack and open `summary.html` (one-page audit summary).
 3. Run `examples/github-actions/terraform-prod.yml`.
 
 The action writes a human-readable summary (receipt + grade + links) to the GitHub Actions step summary.
-

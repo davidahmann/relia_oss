@@ -1,4 +1,9 @@
-#!/usr/bin/env markdown
+---
+title: Slack approvals
+description: "Configure Slack approvals for Relia: signature verification, interactive callbacks, outbound approval messages, and retry-safe delivery via an outbox."
+keywords: slack approvals, interactive messages, signing secret, outbox, retries, idempotency, relia
+---
+
 # Slack integration (approvals)
 
 Relia supports Slack-based approvals:

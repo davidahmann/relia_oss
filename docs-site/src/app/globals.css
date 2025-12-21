@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 3, 7, 18;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)));
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+pre {
+  background: #0d1117 !important;
+  border-radius: 0.5rem;
+  border: 1px solid #30363d;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+pre code {
+  display: block;
+  padding: 1rem 1.25rem;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: #e6edf3;
+  background: transparent !important;
+  counter-reset: line;
+}
+
+code:not(pre code) {
+  background: rgba(110, 118, 129, 0.4);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.875em;
+  color: #f0f6fc;
+}
+
+/* highlight.js - GitHub dark-ish */
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e;
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type {
+  color: #ff7b72;
+}
+.hljs-built_in,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: #ffa657;
+}
+.hljs-function .hljs-title,
+.hljs-title.function_,
+.hljs-attr {
+  color: #d2a8ff;
+}
+.hljs-string,
+.hljs-template-variable {
+  color: #a5d6ff;
+}
+.hljs-number,
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet {
+  color: #79c0ff;
+}
+.hljs-variable,
+.hljs-params,
+.hljs-template-tag {
+  color: #ffa657;
+}
+.hljs-operator,
+.hljs-punctuation {
+  color: #e6edf3;
+}
+.hljs-meta {
+  color: #79c0ff;
+}
+.hljs-property {
+  color: #79c0ff;
+}
+.hljs-deletion {
+  color: #ffa198;
+  background: rgba(255, 129, 130, 0.15);
+}
+.hljs-addition {
+  color: #7ee787;
+  background: rgba(63, 185, 80, 0.15);
+}
+
