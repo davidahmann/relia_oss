@@ -67,6 +67,10 @@ func MakeReceipt(in MakeReceiptInput, signer Signer) (StoredReceipt, error) {
 		return StoredReceipt{}, fmt.Errorf("invalid outcome status: %s", in.Outcome.Status)
 	}
 
+	approval := approvalMap(in.Approval)
+	credential := credentialMap(in.CredentialGrant)
+	outcomeError := outcomeErrorMap(in.Outcome.Error)
+
 	body := map[string]any{
 		"schema":      in.Schema,
 		"created_at":  in.CreatedAt,
@@ -93,13 +97,13 @@ func MakeReceipt(in MakeReceiptInput, signer Signer) (StoredReceipt, error) {
 			"policy_version": in.Policy.PolicyVersion,
 			"policy_hash":    in.Policy.PolicyHash,
 		},
-		"approval":         in.Approval,
-		"credential_grant": in.CredentialGrant,
+		"approval":         approval,
+		"credential_grant": credential,
 		"outcome": map[string]any{
 			"status":     in.Outcome.Status,
 			"issued_at":  in.Outcome.IssuedAt,
 			"expires_at": in.Outcome.ExpiresAt,
-			"error":      in.Outcome.Error,
+			"error":      outcomeError,
 		},
 	}
 
@@ -145,6 +149,64 @@ func MakeReceipt(in MakeReceiptInput, signer Signer) (StoredReceipt, error) {
 		Final:               final,
 		ExpiresAt:           expiresAt,
 	}, nil
+}
+
+func approvalMap(approval *types.ReceiptApproval) map[string]any {
+	if approval == nil {
+		return nil
+	}
+
+	var approver map[string]any
+	if approval.Approver != nil {
+		approver = map[string]any{
+			"kind":    approval.Approver.Kind,
+			"id":      approval.Approver.ID,
+			"display": approval.Approver.Display,
+		}
+	}
+
+	return map[string]any{
+		"required":    approval.Required,
+		"approval_id": emptyToNil(approval.ApprovalID),
+		"status":      emptyToNil(approval.Status),
+		"approved_at": emptyToNil(approval.ApprovedAt),
+		"approver":    approver,
+	}
+}
+
+func credentialMap(credential *types.ReceiptCredentialGrant) map[string]any {
+	if credential == nil {
+		return nil
+	}
+
+	return map[string]any{
+		"provider":     emptyToNil(credential.Provider),
+		"method":       emptyToNil(credential.Method),
+		"role_arn":     emptyToNil(credential.RoleARN),
+		"region":       emptyToNil(credential.Region),
+		"ttl_seconds":  credential.TTLSeconds,
+		"scope_digest": emptyToNil(credential.ScopeDigest),
+	}
+}
+
+func outcomeErrorMap(errInfo *struct {
+	Code string `json:"code"`
+	Msg  string `json:"msg"`
+}) map[string]any {
+	if errInfo == nil {
+		return nil
+	}
+	return map[string]any{
+		"code": emptyToNil(errInfo.Code),
+		"msg":  emptyToNil(errInfo.Msg),
+	}
+}
+
+func emptyToNil(s string) any {
+	if s == "" {
+		return nil
+	}
+	return s
 }
 
 func validOutcome(status types.OutcomeStatus) bool {
