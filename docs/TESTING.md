@@ -25,6 +25,11 @@ E2E tests are tagged and not run by default:
 ./scripts/e2e.sh
 ```
 
+## Integration E2E (manual)
+
+- Slack approvals: `docs/SLACK.md`
+- AWS via GitHub OIDC: `docs/AWS_OIDC.md`
+
 ## Benchmarks
 
 ```bash

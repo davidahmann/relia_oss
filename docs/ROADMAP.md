@@ -19,8 +19,8 @@ Shipped/targeted capabilities:
 - CLI: `relia verify`, `relia pack`, `relia policy lint`
 
 Notes:
-- GitHub OIDC JWT validation is not yet implemented (dev token only).
-- AWS credential minting is a dev broker placeholder.
+- GitHub Actions OIDC JWT validation is implemented (dev token still supported).
+- AWS credential minting defaults to a dev broker placeholder; real AWS STS is supported with `RELIA_AWS_MODE=real`.
 
 ## v0.2 (proxy / sidecar)
 

@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/davidahmann/relia/internal/api"
@@ -75,9 +76,17 @@ func newServer(cfg config.Config, getenv envFn) (*http.Server, error) {
 	addr := firstNonEmpty(getenv("RELIA_LISTEN_ADDR"), cfg.ListenAddr, ":8080")
 	policyPath := firstNonEmpty(getenv("RELIA_POLICY_PATH"), cfg.PolicyPath, "policies/relia.yaml")
 
+	slackEnabled := cfg.Slack.Enabled
+	if raw := getenv("RELIA_SLACK_ENABLED"); raw != "" {
+		slackEnabled = envBool(raw)
+	}
+
 	signingSecret := firstNonEmpty(getenv("RELIA_SLACK_SIGNING_SECRET"), cfg.Slack.SigningSecret, "")
 	slackToken := firstNonEmpty(getenv("RELIA_SLACK_BOT_TOKEN"), cfg.Slack.BotToken, "")
 	slackChannel := firstNonEmpty(getenv("RELIA_SLACK_APPROVAL_CHANNEL"), cfg.Slack.ApprovalChannel, "")
+	if slackEnabled && signingSecret == "" {
+		return nil, logErrorf("missing slack signing secret")
+	}
 
 	dbDriver := firstNonEmpty(getenv("RELIA_DB_DRIVER"), cfg.DB.Driver, "sqlite")
 	dbDSN := firstNonEmpty(getenv("RELIA_DB_DSN"), cfg.DB.DSN, "file:relia.db?_journal_mode=WAL")
@@ -122,7 +131,7 @@ func newServer(cfg config.Config, getenv envFn) (*http.Server, error) {
 	}
 
 	var notifier api.SlackNotifier
-	if cfg.Slack.Enabled && slackToken != "" {
+	if slackEnabled && slackToken != "" {
 		notifier = &slack.Client{Token: slackToken}
 	}
 
@@ -186,6 +195,15 @@ func firstNonEmpty(values ...string) string {
 		}
 	}
 	return ""
+}
+
+func envBool(value string) bool {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "1", "true", "yes", "y", "on":
+		return true
+	default:
+		return false
+	}
 }
 
 func awsBrokerFromEnv(getenv envFn, cfg config.Config) aws.CredentialBroker {

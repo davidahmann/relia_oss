@@ -1,3 +1,4 @@
+---
 display_information:
   name: Relia Approvals
 features:
@@ -12,4 +13,3 @@ settings:
   interactivity:
     is_enabled: true
     request_url: https://YOUR_RELIA_URL/v1/slack/interactions
----

@@ -11,6 +11,14 @@
 go run ./cmd/relia-gateway
 ```
 
+## Slack approvals (optional)
+
+- `docs/SLACK.md`
+
+## AWS via GitHub OIDC (optional)
+
+- `docs/AWS_OIDC.md`
+
 ## Run the gateway (Docker)
 
 ```bash

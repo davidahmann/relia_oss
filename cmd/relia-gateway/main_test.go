@@ -61,6 +61,7 @@ func TestNewServerSigningKeyAndSlack(t *testing.T) {
 		Slack: config.SlackConfig{
 			Enabled:         true,
 			BotToken:        "xoxb-test",
+			SigningSecret:   "signing-secret",
 			ApprovalChannel: "C123",
 		},
 	}
@@ -86,6 +87,7 @@ func TestNewServerStartsSlackOutboxWorker(t *testing.T) {
 		Slack: config.SlackConfig{
 			Enabled:         true,
 			BotToken:        "xoxb-test",
+			SigningSecret:   "signing-secret",
 			ApprovalChannel: "C123",
 		},
 	}

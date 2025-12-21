@@ -28,6 +28,18 @@ jobs:
           plan_digest: ${{ env.PLAN_DIGEST }}
           diff_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
+      - name: Sanity check AWS creds
+        run: |
+          test -n "${AWS_ACCESS_KEY_ID:-}"
+          test -n "${AWS_SECRET_ACCESS_KEY:-}"
+          test -n "${AWS_SESSION_TOKEN:-}"
+          echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+          if [[ "${AWS_ACCESS_KEY_ID}" == DEV_* ]]; then
+            echo "got dev placeholder creds; set RELIA_AWS_MODE=real on the gateway + configure AWS OIDC trust" >&2
+            exit 1
+          fi
+          aws sts get-caller-identity
+
       - name: Terraform apply (now has short-lived creds)
         run: |
           terraform init
