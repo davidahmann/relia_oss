@@ -20,7 +20,9 @@ func NewSTSBroker(region string) (*STSBroker, error) {
 	if strings.TrimSpace(region) == "" {
 		return nil, fmt.Errorf("missing region")
 	}
-	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +44,9 @@ func (b *STSBroker) AssumeRoleWithWebIdentity(input AssumeRoleInput) (Credential
 	}
 
 	sessionName := "relia"
-	out, err := b.client.AssumeRoleWithWebIdentity(context.Background(), &sts.AssumeRoleWithWebIdentityInput{
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	out, err := b.client.AssumeRoleWithWebIdentity(ctx, &sts.AssumeRoleWithWebIdentityInput{
 		RoleArn:          &input.RoleARN,
 		RoleSessionName:  &sessionName,
 		WebIdentityToken: &input.WebIdentityToken,

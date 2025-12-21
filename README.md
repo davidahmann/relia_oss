@@ -60,6 +60,7 @@ Relia does not require a proxy/sidecar in v0.1.
 - For GitHub Actions: workflow with `permissions: id-token: write`
 - For real AWS creds: AWS role configured for GitHub OIDC trust (`docs/AWS_OIDC.md`)
 - For Slack approvals: Slack app + bot token + signing secret (`docs/SLACK.md`)
+- For stable receipt verification across restarts: configure a signing key (below).
 
 ### Run locally (Go, dev token)
 
@@ -108,6 +109,18 @@ Then open `http://localhost:8080/verify/<receipt_id>` (and download `http://loca
 ```bash
 export RELIA_DEV_TOKEN=dev
 docker compose -f deploy/docker-compose.yml up --build
+```
+
+By default, `deploy/docker-compose.yml` mounts:
+
+- `./keys` → `/app/keys` (read-only) for receipt signing keys
+- `./data` → `/app/data` for the SQLite DB (`/app/data/relia.db`)
+
+Generate signing keys (recommended):
+
+```bash
+mkdir -p keys data
+go run ./cmd/relia-cli keys gen --private keys/ed25519.key --public keys/ed25519.pub
 ```
 
 ## Docs

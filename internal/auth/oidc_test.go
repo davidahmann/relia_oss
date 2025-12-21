@@ -154,3 +154,50 @@ func TestMultiAuthenticator_OIDCPath(t *testing.T) {
 		t.Fatalf("expected token to be carried through")
 	}
 }
+
+func TestGitHubOIDCAuthenticator_NoJWKKeys(t *testing.T) {
+	priv, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("gen rsa: %v", err)
+	}
+
+	kid := "k3"
+	jwksSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Return no usable RSA/RS256 keys.
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"keys": []map[string]any{
+				{"kid": kid, "kty": "EC", "alg": "ES256", "use": "sig"},
+			},
+		})
+	}))
+	defer jwksSrv.Close()
+
+	a := NewGitHubOIDCAuthenticator("relia")
+	a.JWKSURL = jwksSrv.URL
+	a.http = jwksSrv.Client()
+
+	now := time.Now().UTC()
+	claims := githubClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    githubIssuer,
+			Subject:   "repo:org/repo:ref:refs/heads/main",
+			Audience:  jwt.ClaimStrings{"relia"},
+			IssuedAt:  jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(now.Add(time.Hour)),
+		},
+		Repository:  "org/repo",
+		WorkflowRef: "wf",
+		RunID:       "1",
+		SHA:         "sha",
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	token.Header["kid"] = kid
+	signed, err := token.SignedString(priv)
+	if err != nil {
+		t.Fatalf("sign: %v", err)
+	}
+
+	if _, err := a.AuthenticateBearer(signed); err == nil {
+		t.Fatalf("expected invalid token")
+	}
+}

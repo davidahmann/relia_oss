@@ -84,3 +84,21 @@ func TestClientPostApprovalErrors(t *testing.T) {
 		t.Fatalf("expected decode error")
 	}
 }
+
+func TestClientPostApprovalDefaultHTTPTimeout(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"ok":true,"ts":"123.456"}`))
+	}))
+	defer srv.Close()
+
+	c := &Client{Token: "xoxb-test", BaseURL: srv.URL}
+	if _, err := c.PostApproval("C123", ApprovalMessageInput{ApprovalID: "a1", Action: "x", Env: "dev", Resource: "r"}); err != nil {
+		t.Fatalf("post: %v", err)
+	}
+	if c.HTTP == nil {
+		t.Fatalf("expected http client to be initialized")
+	}
+	if c.HTTP.Timeout == 0 {
+		t.Fatalf("expected non-zero timeout")
+	}
+}

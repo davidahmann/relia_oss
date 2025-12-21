@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Client struct {
@@ -15,7 +16,7 @@ type Client struct {
 
 func (c *Client) PostApproval(channel string, message ApprovalMessageInput) (string, error) {
 	if c.HTTP == nil {
-		c.HTTP = http.DefaultClient
+		c.HTTP = &http.Client{Timeout: 10 * time.Second}
 	}
 	baseURL := c.BaseURL
 	if baseURL == "" {

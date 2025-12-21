@@ -21,6 +21,19 @@ keywords: relia quickstart, policy simulator, slack approvals, verify receipt, a
 go run ./cmd/relia-gateway
 ```
 
+## Signing keys (recommended)
+
+For stable, offline-verifiable receipts across gateway restarts, configure a persistent Ed25519 signing key:
+
+```bash
+mkdir -p keys
+go run ./cmd/relia-cli keys gen --private keys/ed25519.key --public keys/ed25519.pub
+```
+
+Then set in `relia.yaml`:
+
+- `signing_key.private_key_path: "./keys/ed25519.key"`
+
 ## Policy simulator
 
 ```bash

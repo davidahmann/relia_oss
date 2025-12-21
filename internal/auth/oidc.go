@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -35,7 +36,7 @@ func NewGitHubOIDCAuthenticator(audience string) *GitHubOIDCAuthenticator {
 		Audience: audience,
 		Issuer:   githubIssuer,
 		JWKSURL:  githubIssuer + "/.well-known/jwks",
-		http:     http.DefaultClient,
+		http:     &http.Client{Timeout: 5 * time.Second},
 		keys:     make(map[string]*rsa.PublicKey),
 	}
 }

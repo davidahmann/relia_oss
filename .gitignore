@@ -22,5 +22,10 @@ coverage.out
 # Docs (per request)
 product/
 
+# Local runtime state (do not commit)
+keys/
+data/
+relia.db
+
 # OS
 .DS_Store

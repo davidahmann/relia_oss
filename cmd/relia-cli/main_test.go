@@ -334,3 +334,110 @@ func TestMainCallsExit(t *testing.T) {
 		t.Fatalf("expected exit code 2, got %d", got)
 	}
 }
+
+func TestKeysGenWritesFiles(t *testing.T) {
+	tmp := t.TempDir()
+	priv := filepath.Join(tmp, "keys", "ed25519.key")
+	pub := filepath.Join(tmp, "keys", "ed25519.pub")
+
+	var out, errOut bytes.Buffer
+	code := run([]string{"relia", "keys", "gen", "--private", priv, "--public", pub}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("expected 0, got %d stderr=%s", code, errOut.String())
+	}
+
+	if _, err := os.Stat(priv); err != nil {
+		t.Fatalf("expected private key file: %v", err)
+	}
+	if _, err := os.Stat(pub); err != nil {
+		t.Fatalf("expected public key file: %v", err)
+	}
+}
+
+func TestKeysGenDoesNotOverwriteByDefault(t *testing.T) {
+	tmp := t.TempDir()
+	priv := filepath.Join(tmp, "ed25519.key")
+	if err := os.WriteFile(priv, []byte("x"), 0o600); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	var out, errOut bytes.Buffer
+	code := run([]string{"relia", "keys", "gen", "--private", priv}, &out, &errOut)
+	if code != 1 {
+		t.Fatalf("expected 1, got %d", code)
+	}
+}
+
+func TestKeysGenOverwriteAndFormats(t *testing.T) {
+	tmp := t.TempDir()
+	priv := filepath.Join(tmp, "ed25519.key")
+	pub := filepath.Join(tmp, "ed25519.pub")
+
+	if err := os.WriteFile(priv, []byte("x"), 0o600); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	var out, errOut bytes.Buffer
+	code := run([]string{"relia", "keys", "gen", "--private", priv, "--public", pub, "--overwrite", "--format", "raw"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("expected 0, got %d stderr=%s", code, errOut.String())
+	}
+
+	privBytes, err := os.ReadFile(priv)
+	if err != nil {
+		t.Fatalf("read priv: %v", err)
+	}
+	if len(privBytes) != 32 {
+		t.Fatalf("expected 32-byte seed, got %d", len(privBytes))
+	}
+
+	pubBytes, err := os.ReadFile(pub)
+	if err != nil {
+		t.Fatalf("read pub: %v", err)
+	}
+	if len(pubBytes) != 32 {
+		t.Fatalf("expected 32-byte public key, got %d", len(pubBytes))
+	}
+}
+
+func TestKeysGenInvalidFormat(t *testing.T) {
+	tmp := t.TempDir()
+	priv := filepath.Join(tmp, "ed25519.key")
+
+	var out, errOut bytes.Buffer
+	code := run([]string{"relia", "keys", "gen", "--private", priv, "--format", "nope"}, &out, &errOut)
+	if code != 1 {
+		t.Fatalf("expected 1, got %d", code)
+	}
+}
+
+func TestKeysGenBase64Format(t *testing.T) {
+	tmp := t.TempDir()
+	priv := filepath.Join(tmp, "ed25519.key")
+
+	var out, errOut bytes.Buffer
+	code := run([]string{"relia", "keys", "gen", "--private", priv, "--format", "base64"}, &out, &errOut)
+	if code != 0 {
+		t.Fatalf("expected 0, got %d stderr=%s", code, errOut.String())
+	}
+	b, err := os.ReadFile(priv)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	if !strings.HasPrefix(string(b), "base64:") {
+		t.Fatalf("expected base64 prefix, got %q", string(b))
+	}
+}
+
+func TestKeysCommandUsage(t *testing.T) {
+	var out, errOut bytes.Buffer
+	if code := run([]string{"relia", "keys"}, &out, &errOut); code != 2 {
+		t.Fatalf("expected 2, got %d", code)
+	}
+
+	out.Reset()
+	errOut.Reset()
+	if code := run([]string{"relia", "keys", "gen"}, &out, &errOut); code != 2 {
+		t.Fatalf("expected 2, got %d", code)
+	}
+}

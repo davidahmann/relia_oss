@@ -103,7 +103,7 @@ func (s *AuthorizeService) Authorize(claims ActorContext, req AuthorizeRequest, 
 		case IdemApprovedReady:
 			return s.issueApprovedReady(idemKey, existing, claims, req, createdAt)
 		case IdemIssuing:
-			return AuthorizeResponse{Verdict: string(VerdictDeny), Error: "issuing in progress"}, nil
+			return s.retryIssuing(idemKey, existing, claims, req, createdAt)
 		case IdemErrored:
 			return AuthorizeResponse{Verdict: string(VerdictDeny), Error: "previous error"}, nil
 		default:
@@ -346,6 +346,53 @@ func (s *AuthorizeService) Authorize(claims ActorContext, req AuthorizeRequest, 
 		resp.Verdict = string(VerdictDeny)
 	}
 	return resp, nil
+}
+
+func (s *AuthorizeService) retryIssuing(idemKey string, idem ledger.IdempotencyKey, claims ActorContext, req AuthorizeRequest, createdAt string) (AuthorizeResponse, error) {
+	if idem.LatestReceiptID == nil || *idem.LatestReceiptID == "" {
+		return AuthorizeResponse{Verdict: string(VerdictDeny), Error: "issuing in progress"}, nil
+	}
+	issuingRec, ok := s.Ledger.GetReceipt(*idem.LatestReceiptID)
+	if !ok {
+		return AuthorizeResponse{}, fmt.Errorf("issuing receipt not found")
+	}
+
+	// Reload policy snapshot for this intent and re-evaluate to get role/ttl (keeps behavior deterministic
+	// across retries without holding DB locks during AWS calls).
+	policyVersion, ok := s.Ledger.GetPolicyVersion(issuingRec.PolicyHash)
+	if !ok {
+		return AuthorizeResponse{}, fmt.Errorf("policy version not found")
+	}
+	loaded, err := policy.LoadPolicyFromBytes([]byte(policyVersion.PolicyYAML))
+	if err != nil {
+		return AuthorizeResponse{}, err
+	}
+
+	input := policy.Input{Action: req.Action, Resource: req.Resource, Env: req.Env}
+	decisionResult := policy.Evaluate(loaded.Policy, loaded.Hash, input)
+	if decisionResult.AWSRoleARN == "" {
+		return AuthorizeResponse{}, fmt.Errorf("missing aws_role_arn in policy")
+	}
+
+	stored := ledger.StoredReceipt{
+		ReceiptID:  issuingRec.ReceiptID,
+		BodyDigest: issuingRec.BodyDigest,
+		BodyJSON:   issuingRec.BodyJSON,
+		KeyID:      issuingRec.KeyID,
+		Sig:        issuingRec.Sig,
+
+		IdemKey:       issuingRec.IdemKey,
+		CreatedAt:     issuingRec.CreatedAt,
+		ContextID:     issuingRec.ContextID,
+		DecisionID:    issuingRec.DecisionID,
+		OutcomeStatus: types.OutcomeStatus(issuingRec.OutcomeStatus),
+		ApprovalID:    issuingRec.ApprovalID,
+		PolicyHash:    issuingRec.PolicyHash,
+		Final:         issuingRec.Final,
+		ExpiresAt:     issuingRec.ExpiresAt,
+	}
+
+	return s.finalizeIssuance(idemKey, stored, claims, req, createdAt, decisionResult.AWSRoleARN, decisionResult.TTLSeconds)
 }
 
 func (s *AuthorizeService) Approve(approvalID string, status string, createdAt string) (string, error) {

@@ -12,6 +12,9 @@ services:
       RELIA_CONFIG_PATH: "/app/relia.yaml"
       RELIA_DEV_TOKEN: "${RELIA_DEV_TOKEN:-dev}"
       RELIA_SLACK_SIGNING_SECRET: "${RELIA_SLACK_SIGNING_SECRET:-}"
+      RELIA_DB_DSN: "file:/app/data/relia.db?_journal_mode=WAL"
     volumes:
       - ../policies:/app/policies:ro
       - ../relia.yaml:/app/relia.yaml:ro
+      - ../keys:/app/keys:ro
+      - ../data:/app/data

@@ -1,6 +1,10 @@
 package main
 
 import (
+	"crypto/ed25519"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -34,6 +38,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return handlePack(args[2:], stdout, stderr)
 	case "policy":
 		return handlePolicy(args[2:], stdout, stderr)
+	case "keys":
+		return handleKeys(args[2:], stdout, stderr)
 	default:
 		usage(stderr)
 		return 2
@@ -226,6 +232,98 @@ func handlePolicy(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 }
 
+func handleKeys(args []string, stdout io.Writer, stderr io.Writer) int {
+	if len(args) == 0 {
+		usage(stderr)
+		return 2
+	}
+
+	switch args[0] {
+	case "gen":
+		fs := flag.NewFlagSet("keys gen", flag.ContinueOnError)
+		fs.SetOutput(stderr)
+		privatePath := fs.String("private", "", "path to write private key seed (required)")
+		publicPath := fs.String("public", "", "path to write public key (optional)")
+		format := fs.String("format", "hex", "key encoding: hex | base64 | raw")
+		overwrite := fs.Bool("overwrite", false, "overwrite existing files")
+		if err := fs.Parse(args[1:]); err != nil {
+			fs.Usage()
+			return 2
+		}
+		if *privatePath == "" {
+			fmt.Fprintln(stderr, "keys gen requires --private")
+			fs.Usage()
+			return 2
+		}
+
+		pub, priv, err := ed25519.GenerateKey(rand.Reader)
+		if err != nil {
+			fmt.Fprintln(stderr, "generate key:", err)
+			return 1
+		}
+		seed := priv.Seed()
+
+		privBytes, err := encodeKey(seed, *format)
+		if err != nil {
+			fmt.Fprintln(stderr, err.Error())
+			return 1
+		}
+		if err := writeFile(*privatePath, privBytes, 0o600, *overwrite); err != nil {
+			fmt.Fprintln(stderr, "write private key:", err)
+			return 1
+		}
+		fmt.Fprintf(stdout, "wrote %s\n", *privatePath)
+
+		if *publicPath != "" {
+			pubBytes, err := encodeKey(pub, *format)
+			if err != nil {
+				fmt.Fprintln(stderr, err.Error())
+				return 1
+			}
+			if err := writeFile(*publicPath, pubBytes, 0o644, *overwrite); err != nil {
+				fmt.Fprintln(stderr, "write public key:", err)
+				return 1
+			}
+			fmt.Fprintf(stdout, "wrote %s\n", *publicPath)
+		}
+
+		return 0
+	default:
+		usage(stderr)
+		return 2
+	}
+}
+
+func encodeKey(key []byte, format string) ([]byte, error) {
+	switch strings.ToLower(strings.TrimSpace(format)) {
+	case "raw":
+		return key, nil
+	case "hex":
+		return []byte("hex:" + hex.EncodeToString(key) + "\n"), nil
+	case "base64":
+		return []byte("base64:" + base64.StdEncoding.EncodeToString(key) + "\n"), nil
+	default:
+		return nil, fmt.Errorf("unsupported --format %q (use hex|base64|raw)", format)
+	}
+}
+
+func writeFile(path string, contents []byte, mode os.FileMode, overwrite bool) error {
+	dir := filepath.Dir(path)
+	if dir != "." {
+		if err := os.MkdirAll(dir, 0o750); err != nil {
+			return err
+		}
+	}
+
+	if !overwrite {
+		if _, err := os.Stat(path); err == nil {
+			return fmt.Errorf("file exists (use --overwrite): %s", path)
+		}
+	}
+
+	return os.WriteFile(path, contents, mode)
+}
+
 func httpGet(client *http.Client, url string, token string) ([]byte, int, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -262,6 +360,7 @@ func usage(w io.Writer) {
 Usage:
   relia verify <receipt_id> [--addr URL] [--json] [--token TOKEN]
   relia pack <receipt_id> --out relia-pack.zip [--addr URL] [--token TOKEN]
+  relia keys gen --private PATH [--public PATH] [--format hex|base64|raw] [--overwrite]
   relia policy lint <policy_path>
   relia policy test --policy PATH --action ACTION --resource RESOURCE --env ENV [--json]
 `)
