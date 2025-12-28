@@ -38,6 +38,7 @@ Relia makes “production action authorization” a first-class record.
 - Generate a signed receipt for every decision/action.
 - Generate a pack ZIP with checksums + a one-page `summary.html`.
 - Verify receipts with `relia verify` (and a hosted verify page, optional).
+- Optionally link upstream Context/Decision records via `context_ref` / `decision_ref` (pass-through refs; Relia does not re-create upstream artifacts).
 
 ## The 15-minute wow demo
 
@@ -90,10 +91,20 @@ go run ./cmd/relia-cli pack <receipt_id> --out relia-pack.zip --token dev
 ```
 
 Packs include `summary.html` and `summary.json` for a one-page audit summary.
+If you provided upstream refs at authorize time, they are preserved in the signed receipt (`receipt.body.refs`) and in `manifest.json` inside the pack.
 
 ```bash
 unzip -l relia-pack.zip
 ```
+
+### Upstream record refs (optional)
+
+If you have upstream artifacts (e.g., Fabra Context Record, Lumyn Decision Record), pass stable handles into `/v1/authorize`:
+
+- `context_ref`: `context_id`, `record_hash`, `content_hash`
+- `decision_ref`: `decision_id`, `inputs_digest`, `record_hash`, `content_digest`
+
+Relia treats these as opaque references (it does not validate them), signs them into the receipt, and carries them into packs for later proof/settlement tooling.
 
 ### Hosted verify page (optional)
 
