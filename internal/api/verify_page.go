@@ -64,6 +64,7 @@ var verifyPageTmpl = template.Must(template.New("verify").Parse(`<!doctype html>
 	      <div class="kv"><div class="k">Verdict</div><div class="v">{{.Verdict}}</div></div>
 	      <div class="kv"><div class="k">Approval</div><div class="v">{{.Approval}}</div></div>
 	      <div class="kv"><div class="k">Policy</div><div class="v">{{.Policy}}</div></div>
+	      <div class="kv"><div class="k">Interaction</div><div class="v">{{if .Interaction}}<code>{{.Interaction}}</code>{{else}}<span class="muted">n/a</span>{{end}}</div></div>
 	      <div class="kv"><div class="k">Refs</div><div class="v">{{if .Refs}}<code>{{.Refs}}</code>{{else}}<span class="muted">n/a</span>{{end}}</div></div>
 	      <div class="kv"><div class="k">Role / TTL</div><div class="v">{{.RoleTTL}}</div></div>
 	      <div class="kv"><div class="k">GitHub Run</div><div class="v">{{if .RunURL}}<a href="{{.RunURL}}">{{.RunURL}}</a>{{else}}<span class="muted">n/a</span>{{end}}</div></div>
@@ -133,26 +134,28 @@ func (h *Handler) VerifyPage(w http.ResponseWriter, r *http.Request) {
 	var rb struct {
 		Policy          types.ReceiptPolicy           `json:"policy"`
 		Approval        *types.ReceiptApproval        `json:"approval,omitempty"`
+		InteractionRef  *types.InteractionRef         `json:"interaction_ref,omitempty"`
 		Refs            *types.ReceiptRefs            `json:"refs,omitempty"`
 		CredentialGrant *types.ReceiptCredentialGrant `json:"credential_grant,omitempty"`
 	}
 	_ = json.Unmarshal(receiptRec.BodyJSON, &rb)
 
 	type view struct {
-		Valid      bool
-		Error      string
-		ReceiptID  string
-		Grade      string
-		Verdict    string
-		Approval   string
-		Policy     string
-		RoleTTL    string
-		Refs       string
-		RunURL     string
-		PlanDigest string
-		DiffURL    string
-		PackURL    string
-		JSONURL    string
+		Valid       bool
+		Error       string
+		ReceiptID   string
+		Grade       string
+		Verdict     string
+		Approval    string
+		Policy      string
+		RoleTTL     string
+		Interaction string
+		Refs        string
+		RunURL      string
+		PlanDigest  string
+		DiffURL     string
+		PackURL     string
+		JSONURL     string
 	}
 
 	v := view{
@@ -212,6 +215,28 @@ func (h *Handler) VerifyPage(w http.ResponseWriter, r *http.Request) {
 	if ctx != nil {
 		v.PlanDigest = ctx.Evidence.PlanDigest
 		v.DiffURL = ctx.Evidence.DiffURL
+	}
+
+	v.Interaction = ""
+	if rb.InteractionRef != nil {
+		ir := rb.InteractionRef
+		parts := []string{}
+		if ir.Mode != "" {
+			parts = append(parts, "mode="+ir.Mode)
+		}
+		if ir.CallID != "" {
+			parts = append(parts, "call_id="+ir.CallID)
+		}
+		if ir.TurnID != "" {
+			parts = append(parts, "turn_id="+ir.TurnID)
+		}
+		if ir.TurnIndex != 0 {
+			parts = append(parts, "turn_index="+int64ToString(int64(ir.TurnIndex)))
+		}
+		if ir.ConsentState != "" {
+			parts = append(parts, "consent="+ir.ConsentState)
+		}
+		v.Interaction = strings.Join(parts, " ")
 	}
 
 	v.Refs = ""

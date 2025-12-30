@@ -101,6 +101,13 @@ func TestMakeReceiptIncludesRefs(t *testing.T) {
 		Actor:      types.ReceiptActor{Kind: "workload", Subject: "dev"},
 		Request:    types.ReceiptRequest{Action: "deploy", Resource: "resource", Env: "prod"},
 		Policy:     types.ReceiptPolicy{PolicyHash: "sha256:policy"},
+		InteractionRef: &types.InteractionRef{
+			Mode:         "voice",
+			CallID:       "call-1",
+			TurnID:       "turn-1",
+			TurnIndex:    1,
+			ConsentState: "recording_ok",
+		},
 		Refs: &types.ReceiptRefs{
 			Context:  &types.ContextRef{ContextID: "context-1", RecordHash: "sha256:ctxrecord"},
 			Decision: &types.DecisionRef{DecisionID: "decision-1", InputsDigest: "sha256:decinputs"},
@@ -119,6 +126,13 @@ func TestMakeReceiptIncludesRefs(t *testing.T) {
 	var body map[string]any
 	if err := json.Unmarshal(receipt.BodyJSON, &body); err != nil {
 		t.Fatalf("unmarshal receipt: %v", err)
+	}
+	interaction, ok := body["interaction_ref"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected interaction_ref object")
+	}
+	if interaction["mode"] != "voice" {
+		t.Fatalf("unexpected interaction_ref.mode: %v", interaction["mode"])
 	}
 	refs, ok := body["refs"].(map[string]any)
 	if !ok {

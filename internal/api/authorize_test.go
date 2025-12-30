@@ -1,9 +1,11 @@
 package api
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/davidahmann/relia/internal/crypto"
+	"github.com/davidahmann/relia/pkg/types"
 )
 
 func TestComputeIdemKeyDeterministic(t *testing.T) {
@@ -74,5 +76,56 @@ func TestComputeIdemKeyRejectsFloat(t *testing.T) {
 	_, err := ComputeIdemKey(actor, req)
 	if err != crypto.ErrFloatNotAllowed {
 		t.Fatalf("expected ErrFloatNotAllowed, got %v", err)
+	}
+}
+
+func TestComputeIdemKeyIncludesInteractionRef(t *testing.T) {
+	actor := ActorContext{
+		Subject: "sub",
+		Issuer:  "iss",
+		Repo:    "org/repo",
+		RunID:   "1",
+	}
+
+	req := AuthorizeRequest{
+		Action:         "action",
+		Resource:       "res",
+		Env:            "prod",
+		InteractionRef: &types.InteractionRef{Mode: "voice", CallID: "call-1", TurnID: "turn-1", TurnIndex: 1},
+		Intent:         map[string]any{"x": "y"},
+		Evidence:       AuthorizeEvidence{PlanDigest: "sha256:plan"},
+		ContextRef:     &types.ContextRef{ContextID: "ctx-1", RecordHash: "sha256:ctx"},
+		DecisionRef:    &types.DecisionRef{DecisionID: "dec-1", InputsDigest: "sha256:inputs"},
+	}
+
+	keyA, err := ComputeIdemKey(actor, req)
+	if err != nil {
+		t.Fatalf("compute: %v", err)
+	}
+
+	req.InteractionRef.CallID = "call-2"
+	keyB, err := ComputeIdemKey(actor, req)
+	if err != nil {
+		t.Fatalf("compute: %v", err)
+	}
+	if keyA == keyB {
+		t.Fatalf("expected different idem keys when interaction_ref changes")
+	}
+}
+
+func TestInteractionRefFromBody(t *testing.T) {
+	body, err := json.Marshal(map[string]any{
+		"interaction_ref": &types.InteractionRef{Mode: "voice", CallID: "call-1", TurnID: "turn-1", TurnIndex: 1},
+	})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	got := interactionRefFromBody(body)
+	if got == nil || got.CallID != "call-1" || got.TurnIndex != 1 {
+		t.Fatalf("unexpected interaction ref: %+v", got)
+	}
+
+	if got := interactionRefFromBody([]byte("not-json")); got != nil {
+		t.Fatalf("expected nil for invalid json")
 	}
 }

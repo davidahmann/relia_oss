@@ -56,6 +56,7 @@ rules:
   "action":"terraform.apply",
   "resource":"res",
   "env":"dev",
+  "interaction_ref":{"mode":"voice","call_id":"call-1","turn_id":"turn-1","turn_index":1,"consent_state":"recording_ok"},
   "context_ref":{"context_id":"context-1","record_hash":"sha256:ctxrecord"},
   "decision_ref":{"decision_id":"decision-1","inputs_digest":"sha256:decinputs"}
 }`
@@ -64,6 +65,16 @@ rules:
 
 	verifyResp := verifyJSON(t, srv.URL, receiptID)
 	receipt := verifyResp["receipt"].(map[string]any)
+	interaction := receipt["interaction_ref"].(map[string]any)
+	if interaction["mode"] != "voice" {
+		t.Fatalf("unexpected mode: %v", interaction["mode"])
+	}
+	if interaction["call_id"] != "call-1" {
+		t.Fatalf("unexpected call_id: %v", interaction["call_id"])
+	}
+	if interaction["turn_id"] != "turn-1" {
+		t.Fatalf("unexpected turn_id: %v", interaction["turn_id"])
+	}
 	refs := receipt["refs"].(map[string]any)
 
 	ctx := refs["context"].(map[string]any)
@@ -96,6 +107,9 @@ rules:
 	}
 	if manifest.Refs.Decision.DecisionID != "decision-1" || manifest.Refs.Decision.InputsDigest != "sha256:decinputs" {
 		t.Fatalf("manifest decision refs mismatch: %+v", manifest.Refs.Decision)
+	}
+	if manifest.InteractionRef == nil || manifest.InteractionRef.Mode != "voice" || manifest.InteractionRef.CallID != "call-1" || manifest.InteractionRef.TurnID != "turn-1" {
+		t.Fatalf("manifest interaction_ref mismatch: %+v", manifest.InteractionRef)
 	}
 }
 

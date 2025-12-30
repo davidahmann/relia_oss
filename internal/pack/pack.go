@@ -113,6 +113,7 @@ func BuildFiles(input Input, baseURL string) (map[string][]byte, error) {
 		Files: fileEntries,
 	}
 	manifest.Refs = extractReceiptRefs(input.Receipt.BodyJSON)
+	manifest.InteractionRef = extractReceiptInteractionRef(input.Receipt.BodyJSON)
 
 	if input.Receipt.ApprovalID != nil {
 		manifest.ApprovalID = *input.Receipt.ApprovalID
@@ -147,6 +148,19 @@ func extractReceiptRefs(body []byte) *types.ReceiptRefs {
 		return nil
 	}
 	return payload.Refs
+}
+
+func extractReceiptInteractionRef(body []byte) *types.InteractionRef {
+	if len(body) == 0 {
+		return nil
+	}
+	var payload struct {
+		InteractionRef *types.InteractionRef `json:"interaction_ref,omitempty"`
+	}
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return nil
+	}
+	return payload.InteractionRef
 }
 
 func buildReceiptJSON(receipt ledger.StoredReceipt, baseURL string) ([]byte, error) {

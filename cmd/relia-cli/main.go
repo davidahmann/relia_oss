@@ -97,6 +97,9 @@ func handleVerify(args []string, stdout io.Writer, stderr io.Writer) int {
 		if payload.Grade != "" {
 			line += " grade=" + payload.Grade
 		}
+		if ir := formatInteractionRef(payload.Receipt); ir != "" {
+			line += " interaction=" + ir
+		}
 		if refs := formatRefs(payload.Receipt); refs != "" {
 			line += " refs=" + refs
 		}
@@ -104,11 +107,37 @@ func handleVerify(args []string, stdout io.Writer, stderr io.Writer) int {
 		return 0
 	}
 	line := fmt.Sprintf("valid=false receipt_id=%s error=%s", payload.ReceiptID, payload.Error)
+	if ir := formatInteractionRef(payload.Receipt); ir != "" {
+		line += " interaction=" + ir
+	}
 	if refs := formatRefs(payload.Receipt); refs != "" {
 		line += " refs=" + refs
 	}
 	fmt.Fprintln(stdout, line)
 	return 1
+}
+
+func formatInteractionRef(receipt map[string]any) string {
+	if receipt == nil {
+		return ""
+	}
+	irAny, ok := receipt["interaction_ref"]
+	if !ok || irAny == nil {
+		return ""
+	}
+	ir, ok := irAny.(map[string]any)
+	if !ok {
+		return ""
+	}
+
+	out := ""
+	out = appendKV(out, "mode", ir["mode"])
+	out = appendKV(out, "call_id", ir["call_id"])
+	out = appendKV(out, "turn_id", ir["turn_id"])
+	if ti, ok := ir["turn_index"].(float64); ok && ti != 0 {
+		out = appendKV(out, "turn_index", fmt.Sprintf("%.0f", ti))
+	}
+	return out
 }
 
 func formatRefs(receipt map[string]any) string {

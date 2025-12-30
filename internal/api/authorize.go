@@ -8,15 +8,16 @@ import (
 )
 
 type AuthorizeRequest struct {
-	RequestID   string             `json:"request_id,omitempty"`
-	Action      string             `json:"action"`
-	Resource    string             `json:"resource"`
-	Env         string             `json:"env"`
-	Intent      map[string]any     `json:"intent,omitempty"`
-	Evidence    AuthorizeEvidence  `json:"evidence,omitempty"`
-	AWS         *AuthorizeAWS      `json:"aws,omitempty"`
-	ContextRef  *types.ContextRef  `json:"context_ref,omitempty"`
-	DecisionRef *types.DecisionRef `json:"decision_ref,omitempty"`
+	RequestID      string                `json:"request_id,omitempty"`
+	Action         string                `json:"action"`
+	Resource       string                `json:"resource"`
+	Env            string                `json:"env"`
+	Intent         map[string]any        `json:"intent,omitempty"`
+	Evidence       AuthorizeEvidence     `json:"evidence,omitempty"`
+	AWS            *AuthorizeAWS         `json:"aws,omitempty"`
+	InteractionRef *types.InteractionRef `json:"interaction_ref,omitempty"`
+	ContextRef     *types.ContextRef     `json:"context_ref,omitempty"`
+	DecisionRef    *types.DecisionRef    `json:"decision_ref,omitempty"`
 }
 
 type AuthorizeEvidence struct {
@@ -79,6 +80,20 @@ func ComputeIdemKey(actor ActorContext, req AuthorizeRequest) (string, error) {
 			"inputs_digest":  req.DecisionRef.InputsDigest,
 			"record_hash":    req.DecisionRef.RecordHash,
 			"content_digest": req.DecisionRef.ContentDigest,
+		}
+	}
+	if req.InteractionRef != nil {
+		payload["interaction_ref"] = map[string]any{
+			"mode":            req.InteractionRef.Mode,
+			"session_id":      req.InteractionRef.SessionID,
+			"call_id":         req.InteractionRef.CallID,
+			"turn_id":         req.InteractionRef.TurnID,
+			"turn_index":      req.InteractionRef.TurnIndex,
+			"turn_started_at": req.InteractionRef.TurnStartedAt,
+			"turn_ended_at":   req.InteractionRef.TurnEndedAt,
+			"jurisdiction":    req.InteractionRef.Jurisdiction,
+			"consent_state":   req.InteractionRef.ConsentState,
+			"redaction_mode":  req.InteractionRef.RedactionMode,
 		}
 	}
 

@@ -182,10 +182,11 @@ func (s *AuthorizeService) Authorize(claims ActorContext, req AuthorizeRequest, 
 			Env:       req.Env,
 			Intent:    req.Intent,
 		},
-		Policy:   receiptPolicy,
-		Refs:     refs,
-		Approval: approval,
-		Outcome:  outcome,
+		Policy:         receiptPolicy,
+		InteractionRef: req.InteractionRef,
+		Refs:           refs,
+		Approval:       approval,
+		Outcome:        outcome,
 	}, s.Signer)
 	if err != nil {
 		return AuthorizeResponse{}, err
@@ -434,6 +435,7 @@ func (s *AuthorizeService) Approve(approvalID string, status string, createdAt s
 			return fmt.Errorf("latest receipt not found")
 		}
 
+		interactionRef := interactionRefFromBody(latestReceipt.BodyJSON)
 		refs := receiptRefsFromBody(latestReceipt.BodyJSON)
 
 		outcome := types.ReceiptOutcome{Status: types.OutcomeApprovalDenied}
@@ -450,6 +452,7 @@ func (s *AuthorizeService) Approve(approvalID string, status string, createdAt s
 			Actor:               types.ReceiptActor{Kind: "approval", Subject: "slack"},
 			Request:             types.ReceiptRequest{RequestID: "approval", Action: "approve", Resource: approval.IdemKey, Env: ""},
 			Policy:              types.ReceiptPolicy{PolicyHash: latestReceipt.PolicyHash},
+			InteractionRef:      interactionRef,
 			Refs:                refs,
 			Approval: &types.ReceiptApproval{
 				Required:   true,
@@ -608,6 +611,19 @@ func receiptRefsFromBody(body []byte) *types.ReceiptRefs {
 	return payload.Refs
 }
 
+func interactionRefFromBody(body []byte) *types.InteractionRef {
+	if len(body) == 0 {
+		return nil
+	}
+	var payload struct {
+		InteractionRef *types.InteractionRef `json:"interaction_ref,omitempty"`
+	}
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return nil
+	}
+	return payload.InteractionRef
+}
+
 func outcomeForAction(action NextAction) types.ReceiptOutcome {
 	switch action {
 	case ActionReturnDenied:
@@ -660,6 +676,7 @@ func (s *AuthorizeService) finalizeIssuance(idemKey string, issuingReceipt ledge
 	}
 
 	refs := receiptRefsFromBody(issuingReceipt.BodyJSON)
+	interactionRef := interactionRefFromBody(issuingReceipt.BodyJSON)
 
 	finalReceipt, err := ledger.MakeReceipt(ledger.MakeReceiptInput{
 		CreatedAt:           createdAt,
@@ -684,6 +701,7 @@ func (s *AuthorizeService) finalizeIssuance(idemKey string, issuingReceipt ledge
 			Intent:    req.Intent,
 		},
 		Policy:          types.ReceiptPolicy{PolicyHash: issuingReceipt.PolicyHash},
+		InteractionRef:  interactionRef,
 		Refs:            refs,
 		CredentialGrant: credentialGrant,
 		Outcome:         types.ReceiptOutcome{Status: types.OutcomeIssuedCredentials, ExpiresAt: creds.ExpiresAt.UTC().Format(time.RFC3339)},
@@ -760,6 +778,7 @@ func (s *AuthorizeService) issueApprovedReady(idemKey string, idem ledger.Idempo
 	}
 
 	refs := receiptRefsFromBody(latest.BodyJSON)
+	interactionRef := interactionRefFromBody(latest.BodyJSON)
 
 	issuingReceipt, err := ledger.MakeReceipt(ledger.MakeReceiptInput{
 		CreatedAt:           createdAt,
@@ -783,9 +802,10 @@ func (s *AuthorizeService) issueApprovedReady(idemKey string, idem ledger.Idempo
 			Env:       req.Env,
 			Intent:    req.Intent,
 		},
-		Policy:  types.ReceiptPolicy{PolicyHash: latest.PolicyHash},
-		Refs:    refs,
-		Outcome: types.ReceiptOutcome{Status: types.OutcomeIssuingCredentials},
+		Policy:         types.ReceiptPolicy{PolicyHash: latest.PolicyHash},
+		InteractionRef: interactionRef,
+		Refs:           refs,
+		Outcome:        types.ReceiptOutcome{Status: types.OutcomeIssuingCredentials},
 	}, s.Signer)
 	if err != nil {
 		return AuthorizeResponse{}, err

@@ -11,24 +11,25 @@ import (
 )
 
 type Summary struct {
-	Schema        string             `json:"schema"`
-	ReceiptID     string             `json:"receipt_id"`
-	DecisionID    string             `json:"decision_id"`
-	ContextID     string             `json:"context_id"`
-	Verdict       string             `json:"verdict"`
-	Grade         string             `json:"grade"`
-	Refs          *types.ReceiptRefs `json:"refs,omitempty"`
-	ApprovalID    string             `json:"approval_id,omitempty"`
-	ApprovalState string             `json:"approval_status,omitempty"`
-	PolicyID      string             `json:"policy_id,omitempty"`
-	PolicyVersion string             `json:"policy_version,omitempty"`
-	PolicyHash    string             `json:"policy_hash"`
-	RoleARN       string             `json:"role_arn,omitempty"`
-	TTLSeconds    int64              `json:"ttl_seconds,omitempty"`
-	PlanDigest    string             `json:"plan_digest,omitempty"`
-	DiffURL       string             `json:"diff_url,omitempty"`
-	VerifyURL     string             `json:"verify_url,omitempty"`
-	PackURL       string             `json:"pack_url,omitempty"`
+	Schema         string                `json:"schema"`
+	ReceiptID      string                `json:"receipt_id"`
+	DecisionID     string                `json:"decision_id"`
+	ContextID      string                `json:"context_id"`
+	Verdict        string                `json:"verdict"`
+	Grade          string                `json:"grade"`
+	Refs           *types.ReceiptRefs    `json:"refs,omitempty"`
+	InteractionRef *types.InteractionRef `json:"interaction_ref,omitempty"`
+	ApprovalID     string                `json:"approval_id,omitempty"`
+	ApprovalState  string                `json:"approval_status,omitempty"`
+	PolicyID       string                `json:"policy_id,omitempty"`
+	PolicyVersion  string                `json:"policy_version,omitempty"`
+	PolicyHash     string                `json:"policy_hash"`
+	RoleARN        string                `json:"role_arn,omitempty"`
+	TTLSeconds     int64                 `json:"ttl_seconds,omitempty"`
+	PlanDigest     string                `json:"plan_digest,omitempty"`
+	DiffURL        string                `json:"diff_url,omitempty"`
+	VerifyURL      string                `json:"verify_url,omitempty"`
+	PackURL        string                `json:"pack_url,omitempty"`
 }
 
 const SummarySchema = "relia.pack_summary.v0.1"
@@ -44,23 +45,25 @@ func BuildSummary(input Input, baseURL string) (Summary, []byte, error) {
 	var rb struct {
 		Approval        *types.ReceiptApproval        `json:"approval,omitempty"`
 		Refs            *types.ReceiptRefs            `json:"refs,omitempty"`
+		InteractionRef  *types.InteractionRef         `json:"interaction_ref,omitempty"`
 		CredentialGrant *types.ReceiptCredentialGrant `json:"credential_grant,omitempty"`
 	}
 	_ = json.Unmarshal(input.Receipt.BodyJSON, &rb)
 
 	s := Summary{
-		Schema:        SummarySchema,
-		ReceiptID:     input.Receipt.ReceiptID,
-		DecisionID:    input.Decision.DecisionID,
-		ContextID:     input.Context.ContextID,
-		Verdict:       input.Decision.Verdict,
-		Grade:         quality.Grade,
-		Refs:          rb.Refs,
-		PolicyID:      input.Decision.Policy.PolicyID,
-		PolicyVersion: input.Decision.Policy.PolicyVersion,
-		PolicyHash:    input.Decision.Policy.PolicyHash,
-		PlanDigest:    input.Context.Evidence.PlanDigest,
-		DiffURL:       input.Context.Evidence.DiffURL,
+		Schema:         SummarySchema,
+		ReceiptID:      input.Receipt.ReceiptID,
+		DecisionID:     input.Decision.DecisionID,
+		ContextID:      input.Context.ContextID,
+		Verdict:        input.Decision.Verdict,
+		Grade:          quality.Grade,
+		Refs:           rb.Refs,
+		InteractionRef: rb.InteractionRef,
+		PolicyID:       input.Decision.Policy.PolicyID,
+		PolicyVersion:  input.Decision.Policy.PolicyVersion,
+		PolicyHash:     input.Decision.Policy.PolicyHash,
+		PlanDigest:     input.Context.Evidence.PlanDigest,
+		DiffURL:        input.Context.Evidence.DiffURL,
 	}
 
 	if rb.CredentialGrant != nil {
@@ -115,6 +118,7 @@ var summaryHTMLTmpl = template.Must(template.New("summary").Parse(`<!doctype htm
     <div class="kv"><div class="k">Policy</div><div class="v">{{.PolicyID}}@{{.PolicyVersion}} <code>{{.PolicyHash}}</code></div></div>
     <div class="kv"><div class="k">Approval</div><div class="v">{{if .ApprovalID}}{{.ApprovalState}} <code>{{.ApprovalID}}</code>{{else}}not required{{end}}</div></div>
     <div class="kv"><div class="k">Role / TTL</div><div class="v">{{if .RoleARN}}{{.RoleARN}} (ttl {{.TTLSeconds}}s){{else}}n/a{{end}}</div></div>
+    <div class="kv"><div class="k">Interaction</div><div class="v">{{if .InteractionRef}}<code>{{.InteractionRef.Mode}}</code>{{if .InteractionRef.CallID}} call_id=<code>{{.InteractionRef.CallID}}</code>{{end}}{{if .InteractionRef.TurnID}} turn_id=<code>{{.InteractionRef.TurnID}}</code>{{end}}{{if .InteractionRef.TurnIndex}} turn_index=<code>{{.InteractionRef.TurnIndex}}</code>{{end}}{{else}}n/a{{end}}</div></div>
     <div class="kv"><div class="k">Plan Digest</div><div class="v">{{if .PlanDigest}}<code>{{.PlanDigest}}</code>{{else}}n/a{{end}}</div></div>
     <div class="kv"><div class="k">Diff URL</div><div class="v">{{if .DiffURL}}<a href="{{.DiffURL}}">{{.DiffURL}}</a>{{else}}n/a{{end}}</div></div>
     <div class="kv"><div class="k">Verify / Pack</div><div class="v">{{if .VerifyURL}}<a href="{{.VerifyURL}}">{{.VerifyURL}}</a>{{end}} {{if .PackURL}}<br/><a href="{{.PackURL}}">{{.PackURL}}</a>{{end}}</div></div>

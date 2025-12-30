@@ -28,6 +28,7 @@ type MakeReceiptInput struct {
 	Request types.ReceiptRequest
 	Policy  types.ReceiptPolicy
 
+	InteractionRef  *types.InteractionRef
 	Refs            *types.ReceiptRefs
 	Approval        *types.ReceiptApproval
 	CredentialGrant *types.ReceiptCredentialGrant
@@ -106,6 +107,9 @@ func MakeReceipt(in MakeReceiptInput, signer Signer) (StoredReceipt, error) {
 			"expires_at": in.Outcome.ExpiresAt,
 			"error":      outcomeError,
 		},
+	}
+	if ir := interactionRefMap(in.InteractionRef); ir != nil {
+		body["interaction_ref"] = ir
 	}
 	if refs := refsMap(in.Refs); refs != nil {
 		body["refs"] = refs
@@ -210,6 +214,41 @@ func refsMap(refs *types.ReceiptRefs) map[string]any {
 		"context":  ctx,
 		"decision": decision,
 	}
+}
+
+func interactionRefMap(ref *types.InteractionRef) map[string]any {
+	if ref == nil {
+		return nil
+	}
+
+	// Keep this minimal and pass-through: Relia does not validate semantics, but it
+	// does avoid emitting an empty object.
+	m := map[string]any{
+		"mode":            emptyToNil(ref.Mode),
+		"session_id":      emptyToNil(ref.SessionID),
+		"call_id":         emptyToNil(ref.CallID),
+		"turn_id":         emptyToNil(ref.TurnID),
+		"turn_started_at": emptyToNil(ref.TurnStartedAt),
+		"turn_ended_at":   emptyToNil(ref.TurnEndedAt),
+		"jurisdiction":    emptyToNil(ref.Jurisdiction),
+		"consent_state":   emptyToNil(ref.ConsentState),
+		"redaction_mode":  emptyToNil(ref.RedactionMode),
+	}
+	if ref.TurnIndex != 0 {
+		m["turn_index"] = ref.TurnIndex
+	}
+
+	empty := true
+	for _, v := range m {
+		if v != nil {
+			empty = false
+			break
+		}
+	}
+	if empty {
+		return nil
+	}
+	return m
 }
 
 func credentialMap(credential *types.ReceiptCredentialGrant) map[string]any {

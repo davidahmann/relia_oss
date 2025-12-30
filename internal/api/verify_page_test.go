@@ -77,13 +77,14 @@ func TestVerifyPageAndPublicPack(t *testing.T) {
 	}
 
 	rec, err := ledger.MakeReceipt(ledger.MakeReceiptInput{
-		CreatedAt:  createdAt,
-		IdemKey:    "idem",
-		ContextID:  ctx.ContextID,
-		DecisionID: dec.DecisionID,
-		Actor:      types.ReceiptActor{Kind: "workload", Subject: "dev", Issuer: "relia-dev", Repo: "org/repo", Workflow: "wf", RunID: "1", SHA: "abc"},
-		Request:    types.ReceiptRequest{Action: "terraform.apply", Resource: "stack/prod", Env: "prod"},
-		Policy:     types.ReceiptPolicy{PolicyID: "relia-default", PolicyVersion: "2025-12-20", PolicyHash: policyHash},
+		CreatedAt:      createdAt,
+		IdemKey:        "idem",
+		ContextID:      ctx.ContextID,
+		DecisionID:     dec.DecisionID,
+		Actor:          types.ReceiptActor{Kind: "workload", Subject: "dev", Issuer: "relia-dev", Repo: "org/repo", Workflow: "wf", RunID: "1", SHA: "abc"},
+		Request:        types.ReceiptRequest{Action: "terraform.apply", Resource: "stack/prod", Env: "prod"},
+		Policy:         types.ReceiptPolicy{PolicyID: "relia-default", PolicyVersion: "2025-12-20", PolicyHash: policyHash},
+		InteractionRef: &types.InteractionRef{Mode: "voice", CallID: "call-1", TurnID: "turn-1", TurnIndex: 1, ConsentState: "recording_ok"},
 		CredentialGrant: &types.ReceiptCredentialGrant{
 			Provider:   "aws_sts",
 			Method:     "AssumeRoleWithWebIdentity",
@@ -121,6 +122,9 @@ func TestVerifyPageAndPublicPack(t *testing.T) {
 	}
 	if !bytes.Contains(w1.Body.Bytes(), []byte("Relia Verify")) {
 		t.Fatalf("expected html body")
+	}
+	if !bytes.Contains(w1.Body.Bytes(), []byte("call_id=call-1")) {
+		t.Fatalf("expected interaction_ref to be rendered, got: %s", w1.Body.String())
 	}
 
 	r2 := httptest.NewRequest(http.MethodGet, "/pack/"+rec.ReceiptID, nil)

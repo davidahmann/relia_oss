@@ -37,7 +37,7 @@ func TestHandleVerify(t *testing.T) {
 			t.Fatalf("unexpected auth header: %q", got)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"receipt_id":"r1","valid":true,"grade":"A","receipt":{"refs":{"context":{"context_id":"c1","record_hash":"sha256:ctx"},"decision":{"decision_id":"d1","inputs_digest":"sha256:dec"}}}}`))
+		_, _ = w.Write([]byte(`{"receipt_id":"r1","valid":true,"grade":"A","receipt":{"interaction_ref":{"mode":"voice","call_id":"call-1","turn_id":"turn-1","turn_index":1},"refs":{"context":{"context_id":"c1","record_hash":"sha256:ctx"},"decision":{"decision_id":"d1","inputs_digest":"sha256:dec"}}}}`))
 	})
 	srv := httptest.NewServer(handler)
 	defer srv.Close()
@@ -52,6 +52,9 @@ func TestHandleVerify(t *testing.T) {
 	}
 	if !strings.Contains(out.String(), "grade=A") {
 		t.Fatalf("expected grade output, got: %s", out.String())
+	}
+	if !strings.Contains(out.String(), "interaction=") {
+		t.Fatalf("expected interaction output, got: %s", out.String())
 	}
 	if !strings.Contains(out.String(), "refs=") {
 		t.Fatalf("expected refs output, got: %s", out.String())

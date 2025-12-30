@@ -65,6 +65,14 @@ Then:
 - `GET /verify/<receipt_id>` renders a human-friendly receipt view (includes a quality grade).
 - `GET /pack/<receipt_id>` downloads a pack zip (includes `summary.html` + `summary.json`).
 
+## Voice/chat agents (optional)
+
+If Relia is gating high-stakes tool calls from a conversational agent, pass `interaction_ref` in `/v1/authorize` requests.
+
+Treat `interaction_ref` as a reference to an append-only timeline with canonical ordering (turns ordered by `turn_index`, 1-based). Relia treats `interaction_ref` as pass-through metadata (it does not validate it), but it will sign it into the receipt and include it in packs for later audit/proof workflows.
+
+Relia does not store raw transcript/audio. For voice, make consent/retention semantics explicit (e.g., `consent_state`, `jurisdiction`, `redaction_mode`) and store raw content in your own system.
+
 ## Run the gateway (Docker)
 
 ```bash

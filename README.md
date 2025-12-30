@@ -38,7 +38,7 @@ Relia makes “production action authorization” a first-class record.
 - Generate a signed receipt for every decision/action.
 - Generate a pack ZIP with checksums + a one-page `summary.html`.
 - Verify receipts with `relia verify` (and a hosted verify page, optional).
-- Optionally link upstream Context/Decision records via `context_ref` / `decision_ref` (pass-through refs; Relia does not re-create upstream artifacts).
+- Optionally link upstream Context/Decision records and interaction timelines via pass-through refs (`context_ref`, `decision_ref`, `interaction_ref`).
 
 ## The 15-minute wow demo
 
@@ -99,12 +99,15 @@ unzip -l relia-pack.zip
 
 ### Upstream record refs (optional)
 
-If you have upstream artifacts (e.g., Fabra Context Record, Lumyn Decision Record), pass stable handles into `/v1/authorize`:
+If you have upstream artifacts (e.g., Fabra Context Record, Lumyn Decision Record) or you’re gating actions from a conversational agent, pass stable handles into `/v1/authorize`:
 
 - `context_ref`: `context_id`, `record_hash`, `content_hash`
 - `decision_ref`: `decision_id`, `inputs_digest`, `record_hash`, `content_digest`
+- `interaction_ref`: `mode`, `call_id`, `turn_id`, `turn_index`, timestamps, consent/retention metadata (optional)
 
 Relia treats these as opaque references (it does not validate them), signs them into the receipt, and carries them into packs for later proof/settlement tooling.
+
+For voice/chat agents, treat `interaction_ref` as a reference to an append-only timeline with canonical ordering (turns ordered by `turn_index`, 1-based). Relia does not store raw transcript/audio; it’s recommended to store digests-only upstream and carry consent/retention fields explicitly (voice is where these become product-critical fastest).
 
 ### Hosted verify page (optional)
 

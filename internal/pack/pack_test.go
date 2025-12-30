@@ -121,13 +121,14 @@ func TestBuildZipManifestIncludesRefs(t *testing.T) {
 	}
 
 	receipt, err := ledger.MakeReceipt(ledger.MakeReceiptInput{
-		CreatedAt:  createdAt,
-		IdemKey:    "idem",
-		ContextID:  ctx.ContextID,
-		DecisionID: dec.DecisionID,
-		Actor:      types.ReceiptActor{Kind: "workload", Subject: "dev"},
-		Request:    types.ReceiptRequest{RequestID: "req", Action: "terraform.apply", Resource: "res", Env: "prod"},
-		Policy:     types.ReceiptPolicy{PolicyHash: "sha256:policy"},
+		CreatedAt:      createdAt,
+		IdemKey:        "idem",
+		ContextID:      ctx.ContextID,
+		DecisionID:     dec.DecisionID,
+		Actor:          types.ReceiptActor{Kind: "workload", Subject: "dev"},
+		Request:        types.ReceiptRequest{RequestID: "req", Action: "terraform.apply", Resource: "res", Env: "prod"},
+		Policy:         types.ReceiptPolicy{PolicyHash: "sha256:policy"},
+		InteractionRef: &types.InteractionRef{Mode: "voice", CallID: "call-1", TurnID: "turn-1", TurnIndex: 1},
 		Refs: &types.ReceiptRefs{
 			Context:  &types.ContextRef{ContextID: "context-1", RecordHash: "sha256:ctxrecord"},
 			Decision: &types.DecisionRef{DecisionID: "decision-1", InputsDigest: "sha256:decinputs"},
@@ -186,6 +187,9 @@ func TestBuildZipManifestIncludesRefs(t *testing.T) {
 	}
 	if manifest.Refs.Decision.InputsDigest != "sha256:decinputs" {
 		t.Fatalf("unexpected decision refs: %+v", manifest.Refs.Decision)
+	}
+	if manifest.InteractionRef == nil || manifest.InteractionRef.CallID != "call-1" {
+		t.Fatalf("unexpected interaction_ref: %+v", manifest.InteractionRef)
 	}
 }
 
@@ -288,5 +292,20 @@ func TestExtractReceiptRefs(t *testing.T) {
 				t.Fatalf("got nil=%v, wantNil=%v", got == nil, tc.wantNil)
 			}
 		})
+	}
+}
+
+func TestExtractReceiptInteractionRef(t *testing.T) {
+	bodyWithRef, err := json.Marshal(map[string]any{
+		"interaction_ref": &types.InteractionRef{Mode: "voice", CallID: "call-1", TurnID: "turn-1", TurnIndex: 1},
+	})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if got := extractReceiptInteractionRef(bodyWithRef); got == nil || got.CallID != "call-1" {
+		t.Fatalf("unexpected interaction_ref: %+v", got)
+	}
+	if got := extractReceiptInteractionRef([]byte("not-json")); got != nil {
+		t.Fatalf("expected nil for invalid json")
 	}
 }
